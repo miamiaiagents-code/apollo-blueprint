@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apollo — AI Workforce Blueprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--surface3:#222;
+  --text:#f5f5f5;--text2:#a0a0a0;--text3:#666;
+  --accent:#D4A853;--accent-dim:rgba(212,168,83,.15);--accent-glow:rgba(212,168,83,.08);
+  --radius:12px;--radius-lg:16px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
+.nav-logo span.sun{font-size:1.3rem}
+.nav-logo .subtitle{font-size:.75rem;color:var(--text2);font-weight:400;margin-left:4px}
+.nav-links{display:flex;gap:4px}
+.nav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;color:var(--text2);transition:all .2s}
+.nav-links a:hover{color:var(--text);background:var(--surface2);text-decoration:none}
+.mobile-menu{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+
+/* SECTIONS */
+section{padding:120px 24px 80px}
+.container{max-width:1200px;margin:0 auto}
+.section-label{font-size:.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);font-weight:600;margin-bottom:12px}
+.section-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:16px}
+.section-subtitle{font-size:1.05rem;color:var(--text2);max-width:700px;line-height:1.7}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px}
+#hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none}
+.hero-content{position:relative;z-index:1;width:100%}
+.hero-title{font-size:clamp(2.5rem,7vw,4.5rem);font-weight:800;line-height:1.05;margin-bottom:24px}
+.hero-title .highlight{color:var(--accent)}
+.hero-subtitle{font-size:1.1rem;color:var(--text2);max-width:750px;line-height:1.8;margin-bottom:48px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:56px}
+.stat-card{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:24px;text-align:center;transition:all .3s}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-glow)}
+.stat-value{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+.stat-label{font-size:.8rem;color:var(--text2);font-weight:500}
+.avatar-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.avatar-row-label{font-size:.8rem;color:var(--text3);font-weight:500;margin-right:8px}
+.avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;transition:all .3s;cursor:default;position:relative}
+.avatar:hover{transform:scale(1.15);box-shadow:0 0 20px rgba(255,255,255,.15)}
+.avatar.live{box-shadow:0 0 0 2px var(--accent),0 0 16px var(--accent-glow)}
+
+/* ARCHITECTURE */
+#architecture{background:var(--surface)}
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:48px;align-items:start}
+.arch-text p{color:var(--text2);margin-bottom:20px;line-height:1.8}
+.org-chart{display:flex;flex-direction:column;align-items:center;gap:24px}
+.org-apex{text-align:center}
+.org-node{display:inline-flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid rgba(212,168,83,.3);border-radius:var(--radius);padding:12px 24px;font-weight:600;font-size:.9rem}
+.org-node .node-dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.org-connector{width:2px;height:32px;background:linear-gradient(to bottom,var(--accent),rgba(212,168,83,.2))}
+.org-stacks{display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%}
+.stack-col{display:flex;flex-direction:column;gap:8px}
+.stack-title{font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:8px;text-align:center}
+.stack-item{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.82rem;transition:all .2s}
+.stack-item:hover{border-color:rgba(255,255,255,.15)}
+.stack-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.stack-item .name{font-weight:600}
+.stack-item .role{color:var(--text2);font-size:.75rem}
+
+/* TEAM */
+.team-intro{margin-bottom:40px}
+.team-group{margin-bottom:32px}
+.team-group-title{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(212,168,83,.15)}
+.team-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-bottom:8px}
+.team-card{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .3s;overflow:hidden}
+.team-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px)}
+.team-card.expanded{border-color:var(--accent);box-shadow:0 8px 40px var(--accent-glow)}
+.card-header{display:flex;align-items:center;gap:14px}
+.card-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0}
+.card-info{flex:1;min-width:0}
+.card-name{font-weight:700;font-size:1rem}
+.card-role{font-size:.8rem;color:var(--text2)}
+.card-status{font-size:.65rem;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.card-status.live{background:rgba(212,168,83,.15);color:var(--accent)}
+.card-status.build-now{background:rgba(59,130,246,.12);color:#60a5fa}
+.card-status.build-next{background:rgba(255,255,255,.06);color:var(--text3)}
+.card-expand{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s;opacity:0}
+.team-card.expanded .card-expand{max-height:200px;opacity:1}
+.card-details{padding-top:16px;margin-top:16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px}
+.card-details .quote{font-style:italic;color:var(--text2);font-size:.9rem}
+.card-details .meta{font-size:.75rem;color:var(--text3)}
+
+/* HOW IT WORKS */
+#workflows{background:var(--surface)}
+.workflows-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.workflow-card{background:var(--bg);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);padding:32px;transition:all .3s}
+.workflow-card:hover{border-color:rgba(255,255,255,.1)}
+.wf-badge{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:12px}
+.wf-title{font-size:1.2rem;font-weight:700;margin-bottom:8px}
+.wf-time{font-size:.8rem;color:var(--text3);margin-bottom:24px}
+.wf-steps{display:flex;flex-direction:column;gap:0}
+.wf-step{display:flex;gap:14px;position:relative;padding-bottom:20px}
+.wf-step:last-child{padding-bottom:0}
+.wf-step::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:rgba(255,255,255,.06)}
+.wf-step:last-child::before{display:none}
+.wf-step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff;flex-shrink:0}
+.wf-step-text{padding-top:5px}
+.wf-step-agent{font-weight:600;font-size:.85rem}
+.wf-step-desc{font-size:.78rem;color:var(--text2);line-height:1.5}
+
+/* ROADMAP */
+.roadmap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px}
+.sprint-card{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);padding:32px;position:relative;overflow:hidden;transition:all .3s}
+.sprint-card:hover{border-color:rgba(255,255,255,.1)}
+.sprint-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent)}
+.sprint-num{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px}
+.sprint-title{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+.sprint-agents{font-size:.8rem;color:var(--text2);margin-bottom:20px;display:flex;gap:8px;flex-wrap:wrap}
+.sprint-agents .agent-tag{background:var(--surface2);padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:500}
+.sprint-tasks{display:flex;flex-direction:column;gap:10px}
+.sprint-task{display:flex;gap:10px;font-size:.82rem;color:var(--text2);line-height:1.5}
+.sprint-task::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(255,255,255,.06);padding:40px 24px;text-align:center}
+footer .foot-logo{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+footer .foot-sub{font-size:.8rem;color:var(--text3)}
+
+/* ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .arch-grid{grid-template-columns:1fr}
+  .workflows-grid{grid-template-columns:1fr}
+  .roadmap-grid{grid-template-columns:1fr}
+  .team-cards{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:rgba(10,10,10,.95);flex-direction:column;padding:16px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav-links.open{display:flex}
+  .mobile-menu{display:block}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .org-stacks{grid-template-columns:1fr}
+  section{padding:80px 16px 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <span class="sun">&#9728;&#65039;</span> Apollo
+      <span class="subtitle">AI Workforce Blueprint</span>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="#hero">Overview</a>
+      <a href="#team">The Team</a>
+      <a href="#workflows">How It Works</a>
+      <a href="#roadmap">Roadmap</a>
+    </div>
+    <button class="mobile-menu" id="menuBtn" aria-label="Menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container hero-content">
+    <div class="section-label">Apollo AI Workforce</div>
+    <h1 class="hero-title">Your AI Command <span class="highlight">Centre.</span></h1>
+    <p class="hero-subtitle">You're the founder of the fastest-growing apparel brand in America &mdash; $700M and climbing. Apollo is your AI twin. Fourteen agents. One empire. One vision.</p>
+    <div class="stats-row">
+      <div class="stat-card fade-in">
+        <div class="stat-value">1</div>
+        <div class="stat-label">Live Now &mdash; Apollo</div>
+      </div>
+      <div class="stat-card fade-in">
+        <div class="stat-value">14</div>
+        <div class="stat-label">Total Agents &mdash; Full Workforce</div>
+      </div>
+      <div class="stat-card fade-in">
+        <div class="stat-value">$1B</div>
+        <div class="stat-label">Target Revenue &mdash; 2027</div>
+      </div>
+      <div class="stat-card fade-in">
+        <div class="stat-value">1M+</div>
+        <div class="stat-label">Customers &mdash; Community Goal</div>
+      </div>
+    </div>
+    <div class="avatar-row">
+      <span class="avatar-row-label">The Team</span>
+      <div class="avatar live" style="background:#D4A853" title="Apollo">AP</div>
+      <div class="avatar" style="background:#4A9EFF" title="Fin">FI</div>
+      <div class="avatar" style="background:#FF6B6B" title="Chain">CH</div>
+      <div class="avatar" style="background:#4ECDC4" title="Globe">GL</div>
+      <div class="avatar" style="background:#FF8C42" title="Vault">VA</div>
+      <div class="avatar" style="background:#A78BFA" title="Scout">SC</div>
+      <div class="avatar" style="background:#34D399" title="Sage">SA</div>
+      <div class="avatar" style="background:#F472B6" title="Maya">MA</div>
+      <div class="avatar" style="background:#FB923C" title="Kira">KI</div>
+      <div class="avatar" style="background:#818CF8" title="Pixel">PI</div>
+      <div class="avatar" style="background:#F87171" title="Pulse">PU</div>
+      <div class="avatar" style="background:#38BDF8" title="Cleo">CL</div>
+      <div class="avatar" style="background:#FBBF24" title="Forge">FO</div>
+      <div class="avatar" style="background:#A3E635" title="Nexus">NE</div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-label">Architecture</div>
+    <h2 class="section-title fade-in">One brand. Thirteen agents. <span style="color:var(--accent)">One twin.</span></h2>
+    <div class="arch-grid">
+      <div class="arch-text fade-in">
+        <p>Comfort is one brand &mdash; the #1 hoodie in America, with a creator-powered growth engine unlike anything in DTC. Apollo sits at the apex: the only agent with full visibility across every department.</p>
+        <p>The <strong>Operations Stack</strong> handles what scale demands: finance, supply chain, inventory, and international expansion. The <strong>Growth Stack</strong> runs the engine: revenue, influencer, creative, performance marketing, customer intelligence, and product development.</p>
+      </div>
+      <div class="org-chart fade-in">
+        <div class="org-apex">
+          <div class="org-node"><span class="node-dot"></span> Apollo &mdash; Master Orchestrator</div>
+        </div>
+        <div class="org-connector"></div>
+        <div class="org-stacks">
+          <div class="stack-col">
+            <div class="stack-title">Operations Stack</div>
+            <div class="stack-item"><span class="stack-dot" style="background:#4A9EFF"></span><span class="name">Fin</span><span class="role">&nbsp;&mdash; Finance</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#FF6B6B"></span><span class="name">Chain</span><span class="role">&nbsp;&mdash; Supply Chain</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#4ECDC4"></span><span class="name">Globe</span><span class="role">&nbsp;&mdash; International</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#FF8C42"></span><span class="name">Vault</span><span class="role">&nbsp;&mdash; Retail</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#34D399"></span><span class="name">Sage</span><span class="role">&nbsp;&mdash; Strategy</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#A78BFA"></span><span class="name">Scout</span><span class="role">&nbsp;&mdash; Intelligence</span></div>
+          </div>
+          <div class="stack-col">
+            <div class="stack-title">Growth Stack</div>
+            <div class="stack-item"><span class="stack-dot" style="background:#F472B6"></span><span class="name">Maya</span><span class="role">&nbsp;&mdash; Revenue</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#FB923C"></span><span class="name">Kira</span><span class="role">&nbsp;&mdash; Influencer</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#818CF8"></span><span class="name">Pixel</span><span class="role">&nbsp;&mdash; Creative</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#F87171"></span><span class="name">Pulse</span><span class="role">&nbsp;&mdash; Performance</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#38BDF8"></span><span class="name">Cleo</span><span class="role">&nbsp;&mdash; Customer</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#FBBF24"></span><span class="name">Forge</span><span class="role">&nbsp;&mdash; Product</span></div>
+            <div class="stack-item"><span class="stack-dot" style="background:#A3E635"></span><span class="name">Nexus</span><span class="role">&nbsp;&mdash; Community</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE TEAM -->
+<section id="team">
+  <div class="container">
+    <div class="section-label">The Team</div>
+    <h2 class="section-title fade-in">Meet your <span style="color:var(--accent)">13 agents.</span></h2>
+    <p class="team-intro section-subtitle fade-in">Click any card to expand their full profile.</p>
+
+    <div class="team-group">
+      <div class="team-group-title">Master Orchestrator</div>
+      <div class="team-cards">
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#D4A853">AP</div>
+            <div class="card-info"><div class="card-name">Apollo</div><div class="card-role">Master Orchestrator</div></div>
+            <span class="card-status live">Live</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"The one who sees the whole board."</div>
+            <div class="meta">apollo@comfrt.com &middot; All workspaces</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-group">
+      <div class="team-group-title">Operations Stack</div>
+      <div class="team-cards">
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#4A9EFF">FI</div>
+            <div class="card-info"><div class="card-name">Fin</div><div class="card-role">Finance & P&L Intelligence</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"He lives in the numbers so you don't have to."</div>
+            <div class="meta">Operations workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#FF6B6B">CH</div>
+            <div class="card-info"><div class="card-name">Chain</div><div class="card-role">Supply Chain & Inventory</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She knows where every hoodie is before you ask."</div>
+            <div class="meta">Operations workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#4ECDC4">GL</div>
+            <div class="card-info"><div class="card-name">Globe</div><div class="card-role">International Expansion</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"He opens new markets while you sleep."</div>
+            <div class="meta">Operations workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#FF8C42">VA</div>
+            <div class="card-info"><div class="card-name">Vault</div><div class="card-role">Retail Operations</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She builds stores that print money."</div>
+            <div class="meta">Operations workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#A78BFA">SC</div>
+            <div class="card-info"><div class="card-name">Scout</div><div class="card-role">Intelligence & Research</div></div>
+            <span class="card-status build-next">Build Next</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She finds what you didn't know to look for."</div>
+            <div class="meta">Operations workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#34D399">SA</div>
+            <div class="card-info"><div class="card-name">Sage</div><div class="card-role">Strategy & OKRs</div></div>
+            <span class="card-status build-next">Build Next</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She sees around corners."</div>
+            <div class="meta">Operations workspace</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-group">
+      <div class="team-group-title">Growth Stack</div>
+      <div class="team-cards">
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#F472B6">MA</div>
+            <div class="card-info"><div class="card-name">Maya</div><div class="card-role">Revenue & Performance</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She lives in every dollar."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#FB923C">KI</div>
+            <div class="card-info"><div class="card-name">Kira</div><div class="card-role">Influencer & Creator Ops</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She builds the army that builds the brand."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#818CF8">PI</div>
+            <div class="card-info"><div class="card-name">Pixel</div><div class="card-role">Creative & Content Ops</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She turns data into the brief that wins."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#F87171">PU</div>
+            <div class="card-info"><div class="card-name">Pulse</div><div class="card-role">Performance Marketing</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"He optimizes every ad dollar until it screams."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#38BDF8">CL</div>
+            <div class="card-info"><div class="card-name">Cleo</div><div class="card-role">Customer Intelligence</div></div>
+            <span class="card-status build-now">Build Now</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"She listens so you don't have to."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#FBBF24">FO</div>
+            <div class="card-info"><div class="card-name">Forge</div><div class="card-role">Product Development</div></div>
+            <span class="card-status build-next">Build Next</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"He builds what the customer demands."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+        <div class="team-card fade-in" onclick="toggleCard(this)">
+          <div class="card-header">
+            <div class="card-avatar" style="background:#A3E635">NE</div>
+            <div class="card-info"><div class="card-name">Nexus</div><div class="card-role">Community & Affiliates</div></div>
+            <span class="card-status build-next">Build Next</span>
+          </div>
+          <div class="card-expand"><div class="card-details">
+            <div class="quote">"He turns customers into evangelists."</div>
+            <div class="meta">Growth workspace</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="workflows">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title fade-in">Three workflows that run <span style="color:var(--accent)">without you.</span></h2>
+    <p class="section-subtitle fade-in">Automated intelligence loops that keep you informed and the business moving &mdash; every day, every week.</p>
+    <div class="workflows-grid">
+
+      <div class="workflow-card fade-in">
+        <div class="wf-badge">Daily</div>
+        <div class="wf-title">The Morning Brief</div>
+        <div class="wf-time">8:00 AM ET &middot; Every Day</div>
+        <div class="wf-steps">
+          <div class="wf-step"><div class="wf-step-dot" style="background:#F472B6">MA</div><div class="wf-step-text"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Pulls Shopify revenue, Meta ROAS, TikTok ROAS from last 24 hours</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#4A9EFF">FI</div><div class="wf-step-text"><div class="wf-step-agent">Fin</div><div class="wf-step-desc">Pulls overnight P&L signals, margin alerts, cash position</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#FB923C">KI</div><div class="wf-step-text"><div class="wf-step-agent">Kira</div><div class="wf-step-desc">Pulls top-performing creator content and new creator applications</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#38BDF8">CL</div><div class="wf-step-text"><div class="wf-step-agent">Cleo</div><div class="wf-step-desc">Pulls overnight review alerts and top support issues</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#FF6B6B">CH</div><div class="wf-step-text"><div class="wf-step-agent">Chain</div><div class="wf-step-desc">Pulls inventory alerts, stockout warnings, shipment updates</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#D4A853">AP</div><div class="wf-step-text"><div class="wf-step-agent">Apollo</div><div class="wf-step-desc">Compiles everything into one Telegram message to Hudson. 8am, every day.</div></div></div>
+        </div>
+      </div>
+
+      <div class="workflow-card fade-in">
+        <div class="wf-badge">Weekly</div>
+        <div class="wf-title">The Creative Flywheel</div>
+        <div class="wf-time">Every Monday</div>
+        <div class="wf-steps">
+          <div class="wf-step"><div class="wf-step-dot" style="background:#F472B6">MA</div><div class="wf-step-text"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Sends Pixel last week's top-performing ad creatives by ROAS and CTR</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#38BDF8">CL</div><div class="wf-step-text"><div class="wf-step-agent">Cleo</div><div class="wf-step-desc">Sends Pixel top review phrases and recurring customer language</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#FB923C">KI</div><div class="wf-step-text"><div class="wf-step-agent">Kira</div><div class="wf-step-desc">Sends Pixel which creator content performed best in paid amplification</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#F87171">PU</div><div class="wf-step-text"><div class="wf-step-agent">Pulse</div><div class="wf-step-desc">Sends Pixel channel-level performance data and creative fatigue signals</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#818CF8">PI</div><div class="wf-step-text"><div class="wf-step-agent">Pixel</div><div class="wf-step-desc">Synthesizes all inputs into the Weekly Creative Brief &mdash; hooks, angles, formats, AI tool recs</div></div></div>
+        </div>
+      </div>
+
+      <div class="workflow-card fade-in">
+        <div class="wf-badge">Weekly</div>
+        <div class="wf-title">The Numbers Review</div>
+        <div class="wf-time">Every Friday</div>
+        <div class="wf-steps">
+          <div class="wf-step"><div class="wf-step-dot" style="background:#F472B6">MA</div><div class="wf-step-text"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Compiles week's revenue, ROAS, and subscription metrics</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#4A9EFF">FI</div><div class="wf-step-text"><div class="wf-step-agent">Fin</div><div class="wf-step-desc">Prepares weekly P&L summary &mdash; revenue vs target, margin vs budget, cash position</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#4ECDC4">GL</div><div class="wf-step-text"><div class="wf-step-agent">Globe</div><div class="wf-step-desc">International market entry progress &mdash; UK, AU, CA pipeline status</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#FF8C42">VA</div><div class="wf-step-text"><div class="wf-step-agent">Vault</div><div class="wf-step-desc">Retail buildout progress &mdash; Mall of America, American Dream Mall status</div></div></div>
+          <div class="wf-step"><div class="wf-step-dot" style="background:#D4A853">AP</div><div class="wf-step-text"><div class="wf-step-agent">Apollo</div><div class="wf-step-desc">Sends Hudson a Friday digest &mdash; financials, growth, expansion. One message.</div></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-label">Roadmap</div>
+    <h2 class="section-title fade-in">14 agents. <span style="color:var(--accent)">14 days.</span></h2>
+    <p class="section-subtitle fade-in">All 14 agents deployed and fully operational within two weeks.</p>
+    <div class="roadmap-grid">
+
+      <div class="sprint-card fade-in">
+        <div class="sprint-num">Sprint 01</div>
+        <div class="sprint-title">Days 1&ndash;3 &mdash; Command Centre Online</div>
+        <div class="sprint-agents">
+          <span class="agent-tag" style="border-left:3px solid #D4A853">Apollo</span>
+          <span class="agent-tag" style="border-left:3px solid #4A9EFF">Fin</span>
+          <span class="agent-tag" style="border-left:3px solid #F472B6">Maya</span>
+        </div>
+        <div class="sprint-tasks">
+          <div class="sprint-task">Apollo: Configure as master orchestrator &mdash; connect Telegram, Notion, email</div>
+          <div class="sprint-task">Apollo: Morning brief live &mdash; Shopify revenue + Meta spend + top 3 issues</div>
+          <div class="sprint-task">Fin: Connect Shopify, banking &mdash; daily P&L and cash position brief live</div>
+          <div class="sprint-task">Maya: Connect Shopify, Meta Ads, Northbeam &mdash; daily revenue brief live</div>
+        </div>
+      </div>
+
+      <div class="sprint-card fade-in">
+        <div class="sprint-num">Sprint 02</div>
+        <div class="sprint-title">Days 4&ndash;7 &mdash; Operations Stack Live</div>
+        <div class="sprint-agents">
+          <span class="agent-tag" style="border-left:3px solid #FF6B6B">Chain</span>
+          <span class="agent-tag" style="border-left:3px solid #FB923C">Kira</span>
+          <span class="agent-tag" style="border-left:3px solid #38BDF8">Cleo</span>
+        </div>
+        <div class="sprint-tasks">
+          <div class="sprint-task">Chain: Connect Shopify inventory, 3PL API &mdash; stockout alerts live</div>
+          <div class="sprint-task">Kira: Connect TikTok, Instagram &mdash; creator tracking, Yuka AI integration</div>
+          <div class="sprint-task">Cleo: Connect reviews, Gorgias &mdash; review digest and NPS monitoring live</div>
+        </div>
+      </div>
+
+      <div class="sprint-card fade-in">
+        <div class="sprint-num">Sprint 03</div>
+        <div class="sprint-title">Days 8&ndash;11 &mdash; Growth Engine</div>
+        <div class="sprint-agents">
+          <span class="agent-tag" style="border-left:3px solid #F87171">Pulse</span>
+          <span class="agent-tag" style="border-left:3px solid #818CF8">Pixel</span>
+          <span class="agent-tag" style="border-left:3px solid #4ECDC4">Globe</span>
+          <span class="agent-tag" style="border-left:3px solid #FF8C42">Vault</span>
+          <span class="agent-tag" style="border-left:3px solid #A3E635">Nexus</span>
+        </div>
+        <div class="sprint-tasks">
+          <div class="sprint-task">Pulse: Connect Meta, TikTok, Google Ads &mdash; performance monitoring and ROAS alerts</div>
+          <div class="sprint-task">Pixel: Connect ad libraries &mdash; weekly creative brief auto-generated</div>
+          <div class="sprint-task">Globe: International expansion tracker &mdash; UK, AU, CA market entry playbooks</div>
+          <div class="sprint-task">Vault: Retail buildout tracker &mdash; Mall of America + American Dream progress</div>
+          <div class="sprint-task">Nexus: Connect Discord &mdash; affiliate engagement and community health</div>
+        </div>
+      </div>
+
+      <div class="sprint-card fade-in">
+        <div class="sprint-num">Sprint 04</div>
+        <div class="sprint-title">Days 12&ndash;14 &mdash; Full Operation</div>
+        <div class="sprint-agents">
+          <span class="agent-tag" style="border-left:3px solid #FBBF24">Forge</span>
+          <span class="agent-tag" style="border-left:3px solid #A78BFA">Scout</span>
+          <span class="agent-tag" style="border-left:3px solid #34D399">Sage</span>
+        </div>
+        <div class="sprint-tasks">
+          <div class="sprint-task">Forge: Connect product roadmap &mdash; weekly NPD digest live</div>
+          <div class="sprint-task">Scout: Competitive intelligence, market trends live</div>
+          <div class="sprint-task">Sage: OKR framework, weekly strategy digest</div>
+          <div class="sprint-task">All 14 agents fully wired &mdash; Apollo compiles the complete CEO brief daily</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="foot-logo">&#9728;&#65039; Apollo</div>
+    <div class="foot-sub">Comfort &middot; AI Workforce Blueprint &middot; 2026</div>
+    <div class="foot-sub" style="margin-top:8px"><a href="https://comfrt.com" target="_blank" rel="noopener">comfrt.com</a></div>
+  </div>
+</footer>
+
+<script>
+// Card expand/collapse
+function toggleCard(card){card.classList.toggle('expanded')}
+
+// Mobile menu
+document.getElementById('menuBtn').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open')});
+
+// Close mobile menu on link click
+document.querySelectorAll('.nav-links a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open')})});
+
+// Scroll fade-in
+(function(){
+  var els=document.querySelectorAll('.fade-in');
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})
+  },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(el){observer.observe(el)});
+})();
+</script>
+</body>
+</html>
