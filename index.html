@@ -4,152 +4,379 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apollo — AI Workforce Blueprint</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--surface3:#222;
-  --text:#f5f5f5;--text2:#a0a0a0;--text3:#666;
-  --accent:#D4A853;--accent-dim:rgba(212,168,83,.15);--accent-glow:rgba(212,168,83,.08);
-  --radius:12px;--radius-lg:16px;
+  --bg:#0a0a0a;
+  --bg2:#0f0f0f;
+  --surface:rgba(255,255,255,0.03);
+  --surface-border:rgba(255,255,255,0.06);
+  --surface-hover:rgba(255,255,255,0.08);
+  --gold:#D4A853;
+  --gold-light:#E8C06A;
+  --gold-dim:rgba(212,168,83,0.15);
+  --gold-glow:rgba(212,168,83,0.06);
+  --gold-border:rgba(212,168,83,0.2);
+  --text:#ffffff;
+  --text-secondary:#999999;
+  --text-muted:#666666;
+  --font-heading:'Cormorant Garamond', Georgia, serif;
+  --font-body:'Outfit', system-ui, sans-serif;
+  --font-mono:'JetBrains Mono', monospace;
 }
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--gold-dim);color:var(--gold-light)}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem}
-.nav-logo span.sun{font-size:1.3rem}
-.nav-logo .subtitle{font-size:.75rem;color:var(--text2);font-weight:400;margin-left:4px}
-.nav-links{display:flex;gap:4px}
-.nav-links a{padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:500;color:var(--text2);transition:all .2s}
-.nav-links a:hover{color:var(--text);background:var(--surface2);text-decoration:none}
-.mobile-menu{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+/* ========== NAV ========== */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(10,10,10,0.8);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--surface-border);
+  transition:all 0.3s;
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;padding:0 40px;
+  height:72px;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:16px}
+.nav-logo{
+  font-family:var(--font-heading);font-size:1.5rem;font-weight:600;
+  color:var(--text);display:flex;align-items:center;gap:10px;
+  letter-spacing:-0.01em;
+}
+.nav-logo svg{width:28px;height:28px}
+.nav-divider{width:1px;height:24px;background:var(--surface-border)}
+.nav-subtitle{font-size:0.8rem;color:var(--text-muted);font-weight:400;letter-spacing:0.05em;text-transform:uppercase}
+.nav-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.03);border-radius:10px;padding:4px}
+.nav-tab{
+  padding:8px 20px;border-radius:8px;font-size:0.85rem;font-weight:500;
+  color:var(--text-secondary);cursor:pointer;transition:all 0.2s;
+  background:none;border:none;font-family:var(--font-body);
+  text-decoration:none;
+}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{background:rgba(255,255,255,0.08);color:var(--text)}
+.mobile-menu{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:8px}
 
-/* SECTIONS */
-section{padding:120px 24px 80px}
-.container{max-width:1200px;margin:0 auto}
-.section-label{font-size:.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent);font-weight:600;margin-bottom:12px}
-.section-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:16px}
-.section-subtitle{font-size:1.05rem;color:var(--text2);max-width:700px;line-height:1.7}
+/* ========== TEAM SUB-NAV ========== */
+.team-subnav{
+  position:fixed;top:72px;left:0;right:0;z-index:999;
+  background:rgba(10,10,10,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--surface-border);
+  transform:translateY(-100%);opacity:0;
+  transition:transform 0.3s ease, opacity 0.3s ease;
+  pointer-events:none;
+}
+.team-subnav.visible{transform:translateY(0);opacity:1;pointer-events:auto}
+.team-subnav-inner{
+  max-width:1280px;margin:0 auto;padding:0 40px;
+  height:52px;display:flex;align-items:center;gap:24px;
+}
+.team-subnav-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+.team-filter{
+  padding:6px 14px;border-radius:6px;font-size:0.8rem;font-weight:500;
+  color:var(--text-secondary);cursor:pointer;transition:all 0.2s;
+  background:none;border:1px solid transparent;font-family:var(--font-body);
+}
+.team-filter:hover{color:var(--text)}
+.team-filter.active{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-border)}
 
-/* HERO */
-#hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px}
-#hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none}
+/* ========== SECTIONS ========== */
+section{padding:120px 40px 100px}
+.container{max-width:1280px;margin:0 auto}
+.section-label{
+  font-family:var(--font-mono);font-size:0.75rem;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
+  margin-bottom:16px;
+}
+.section-title{
+  font-family:var(--font-heading);font-size:clamp(2.4rem,5vw,3.8rem);
+  font-weight:400;line-height:1.15;margin-bottom:20px;letter-spacing:-0.02em;
+}
+.section-title em{font-style:italic;color:var(--gold)}
+.section-desc{font-size:1.05rem;color:var(--text-secondary);max-width:640px;line-height:1.7;font-weight:300}
+
+/* ========== HERO ========== */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:72px;position:relative;overflow:hidden}
+#hero::before{
+  content:'';position:absolute;top:-300px;left:50%;transform:translateX(-50%);
+  width:1000px;height:1000px;
+  background:radial-gradient(circle,rgba(212,168,83,0.06) 0%,transparent 60%);
+  pointer-events:none;
+}
 .hero-content{position:relative;z-index:1;width:100%}
-.hero-title{font-size:clamp(2.5rem,7vw,4.5rem);font-weight:800;line-height:1.05;margin-bottom:24px}
-.hero-title .highlight{color:var(--accent)}
-.hero-subtitle{font-size:1.1rem;color:var(--text2);max-width:750px;line-height:1.8;margin-bottom:48px}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:56px}
-.stat-card{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:24px;text-align:center;transition:all .3s}
-.stat-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-glow)}
-.stat-value{font-size:1.5rem;font-weight:800;margin-bottom:6px}
-.stat-label{font-size:.8rem;color:var(--text2);font-weight:500}
-.avatar-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.avatar-row-label{font-size:.8rem;color:var(--text3);font-weight:500;margin-right:8px}
-.avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;transition:all .3s;cursor:default;position:relative}
-.avatar:hover{transform:scale(1.15);box-shadow:0 0 20px rgba(255,255,255,.15)}
-.avatar.live{box-shadow:0 0 0 2px var(--accent),0 0 16px var(--accent-glow)}
+.hero-eyebrow{
+  font-family:var(--font-mono);font-size:0.8rem;font-weight:500;
+  color:var(--gold);letter-spacing:0.12em;text-transform:uppercase;
+  margin-bottom:24px;display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-heading{
+  font-family:var(--font-heading);
+  font-size:clamp(3rem,7vw,5.5rem);font-weight:400;
+  line-height:1.05;margin-bottom:28px;letter-spacing:-0.02em;
+}
+.hero-heading em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:1.15rem;color:var(--text-secondary);max-width:680px;line-height:1.8;margin-bottom:56px;font-weight:300}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:64px}
+.hero-stat{
+  background:var(--surface);border:1px solid var(--surface-border);
+  border-radius:16px;padding:28px 24px;text-align:center;
+  transition:all 0.3s ease;
+}
+.hero-stat:hover{border-color:var(--gold-border);transform:translateY(-2px);box-shadow:0 12px 40px var(--gold-glow)}
+.hero-stat-value{
+  font-family:var(--font-heading);font-size:2.2rem;font-weight:600;
+  color:var(--text);margin-bottom:6px;
+}
+.hero-stat-label{font-size:0.8rem;color:var(--text-muted);font-weight:400}
+.hero-agents{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-agents-label{font-size:0.8rem;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
+.hero-avatar{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;cursor:default;position:relative;
+  border:2px solid transparent;
+}
+.hero-avatar svg{width:22px;height:22px}
+.hero-avatar:hover{transform:scale(1.15);border-color:rgba(255,255,255,0.1)}
+.hero-avatar.live{border-color:var(--gold);box-shadow:0 0 20px var(--gold-glow)}
 
-/* ARCHITECTURE */
-#architecture{background:var(--surface)}
-.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:48px;align-items:start}
-.arch-text p{color:var(--text2);margin-bottom:20px;line-height:1.8}
-.org-chart{display:flex;flex-direction:column;align-items:center;gap:24px}
-.org-apex{text-align:center}
-.org-node{display:inline-flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid rgba(212,168,83,.3);border-radius:var(--radius);padding:12px 24px;font-weight:600;font-size:.9rem}
-.org-node .node-dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.org-connector{width:2px;height:32px;background:linear-gradient(to bottom,var(--accent),rgba(212,168,83,.2))}
-.org-stacks{display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%}
-.stack-col{display:flex;flex-direction:column;gap:8px}
-.stack-title{font-size:.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:8px;text-align:center}
-.stack-item{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 14px;font-size:.82rem;transition:all .2s}
-.stack-item:hover{border-color:rgba(255,255,255,.15)}
-.stack-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.stack-item .name{font-weight:600}
-.stack-item .role{color:var(--text2);font-size:.75rem}
+/* ========== TEAM SECTION ========== */
+#team{background:var(--bg2)}
+.team-group{margin-bottom:48px}
+.team-group:last-child{margin-bottom:0}
+.team-group-label{
+  font-family:var(--font-mono);font-size:0.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
+  margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--gold-border);
+}
 
-/* TEAM */
-.team-intro{margin-bottom:40px}
-.team-group{margin-bottom:32px}
-.team-group-title{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);font-weight:600;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(212,168,83,.15)}
-.team-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-bottom:8px}
-.team-card{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .3s;overflow:hidden}
-.team-card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-1px)}
-.team-card.expanded{border-color:var(--accent);box-shadow:0 8px 40px var(--accent-glow)}
-.card-header{display:flex;align-items:center;gap:14px}
-.card-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0}
-.card-info{flex:1;min-width:0}
-.card-name{font-weight:700;font-size:1rem}
-.card-role{font-size:.8rem;color:var(--text2)}
-.card-status{font-size:.65rem;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
-.card-status.live{background:rgba(212,168,83,.15);color:var(--accent)}
-.card-status.build-now{background:rgba(59,130,246,.12);color:#60a5fa}
-.card-status.build-next{background:rgba(255,255,255,.06);color:var(--text3)}
-.card-expand{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s;opacity:0}
-.team-card.expanded .card-expand{max-height:200px;opacity:1}
-.card-details{padding-top:16px;margin-top:16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px}
-.card-details .quote{font-style:italic;color:var(--text2);font-size:.9rem}
-.card-details .meta{font-size:.75rem;color:var(--text3)}
+/* Agent Card - Collapsed Row */
+.agent-card{
+  background:var(--surface);border:1px solid var(--surface-border);
+  border-radius:14px;margin-bottom:8px;cursor:pointer;
+  transition:all 0.3s ease;overflow:hidden;
+}
+.agent-card:hover{border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.04)}
+.agent-card.expanded{
+  border-color:var(--gold-border);
+  box-shadow:0 8px 48px rgba(212,168,83,0.08);
+  background:rgba(255,255,255,0.04);
+}
+.agent-row{
+  display:flex;align-items:center;padding:20px 28px;gap:20px;
+}
+.agent-avatar{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;
+}
+.agent-avatar svg{width:26px;height:26px}
+.agent-info{flex:1;min-width:0}
+.agent-name{font-family:var(--font-heading);font-size:1.3rem;font-weight:600;letter-spacing:-0.01em}
+.agent-role{font-size:0.85rem;color:var(--text-secondary);font-weight:400}
+.agent-quote{
+  font-size:0.85rem;color:var(--text-muted);font-style:italic;
+  flex:1;text-align:right;padding:0 32px;
+  display:none;
+}
+.agent-status{
+  font-family:var(--font-mono);font-size:0.65rem;font-weight:600;
+  padding:5px 14px;border-radius:20px;white-space:nowrap;
+  letter-spacing:0.05em;text-transform:uppercase;
+}
+.agent-status.live{background:var(--gold-dim);color:var(--gold)}
+.agent-status.phase-1{background:rgba(59,130,246,0.12);color:#60a5fa}
+.agent-status.phase-2{background:rgba(139,92,246,0.12);color:#a78bfa}
+.agent-status.phase-3{background:rgba(255,255,255,0.05);color:var(--text-muted)}
+.agent-chevron{
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);transition:transform 0.3s ease;flex-shrink:0;
+}
+.agent-card.expanded .agent-chevron{transform:rotate(180deg)}
 
-/* HOW IT WORKS */
-#workflows{background:var(--surface)}
-.workflows-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
-.workflow-card{background:var(--bg);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);padding:32px;transition:all .3s}
-.workflow-card:hover{border-color:rgba(255,255,255,.1)}
-.wf-badge{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:12px}
-.wf-title{font-size:1.2rem;font-weight:700;margin-bottom:8px}
-.wf-time{font-size:.8rem;color:var(--text3);margin-bottom:24px}
+/* Agent Card - Expanded Content */
+.agent-expand{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.agent-card.expanded .agent-expand{max-height:1200px}
+.agent-detail{
+  padding:0 28px 28px;
+  display:grid;grid-template-columns:1fr 320px;gap:40px;
+  border-top:1px solid var(--surface-border);
+  padding-top:24px;margin:0 28px;padding-left:0;padding-right:0;
+}
+.agent-detail-left{}
+.agent-about{font-size:0.92rem;color:var(--text-secondary);line-height:1.75;margin-bottom:24px;font-weight:300}
+.agent-section{margin-bottom:20px}
+.agent-section:last-child{margin-bottom:0}
+.agent-section-title{
+  font-family:var(--font-heading);font-size:1.1rem;font-weight:600;
+  color:var(--text);margin-bottom:10px;
+}
+.agent-section ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.agent-section li{
+  font-size:0.85rem;color:var(--text-secondary);line-height:1.6;
+  padding-left:20px;position:relative;font-weight:300;
+}
+.agent-section li::before{
+  content:'';position:absolute;left:0;top:9px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--gold);opacity:0.6;
+}
+
+.agent-detail-right{display:flex;flex-direction:column;gap:24px}
+.agent-meta-block{}
+.agent-meta-title{
+  font-family:var(--font-mono);font-size:0.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);
+  margin-bottom:12px;
+}
+.agent-access-list{display:flex;flex-direction:column;gap:8px}
+.agent-access-item{
+  font-size:0.85rem;color:var(--text-secondary);
+  display:flex;align-items:center;gap:10px;
+}
+.agent-access-item span.emoji{font-size:1rem;width:24px;text-align:center;flex-shrink:0}
+.agent-tags{display:flex;flex-wrap:wrap;gap:8px}
+.agent-tag{
+  font-family:var(--font-mono);font-size:0.72rem;font-weight:500;
+  padding:5px 12px;border-radius:6px;
+  background:rgba(255,255,255,0.05);color:var(--text-secondary);
+  border:1px solid var(--surface-border);
+}
+.agent-tag.paired{border-left:3px solid var(--gold)}
+.agent-tag.tool{background:rgba(212,168,83,0.06);border-color:var(--gold-border)}
+
+/* ========== WORKFLOWS ========== */
+#workflows{background:var(--bg)}
+.workflows-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.workflow-card{
+  background:var(--surface);border:1px solid var(--surface-border);
+  border-radius:16px;padding:32px;transition:all 0.3s;
+}
+.workflow-card:hover{border-color:rgba(255,255,255,0.1)}
+.wf-type{
+  font-family:var(--font-mono);font-size:0.65rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
+  margin-bottom:16px;
+}
+.wf-title{font-family:var(--font-heading);font-size:1.4rem;font-weight:600;margin-bottom:6px}
+.wf-time{font-size:0.8rem;color:var(--text-muted);margin-bottom:28px;font-weight:400}
 .wf-steps{display:flex;flex-direction:column;gap:0}
-.wf-step{display:flex;gap:14px;position:relative;padding-bottom:20px}
+.wf-step{display:flex;gap:16px;position:relative;padding-bottom:24px}
 .wf-step:last-child{padding-bottom:0}
-.wf-step::before{content:'';position:absolute;left:15px;top:32px;bottom:0;width:1px;background:rgba(255,255,255,.06)}
-.wf-step:last-child::before{display:none}
-.wf-step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff;flex-shrink:0}
-.wf-step-text{padding-top:5px}
-.wf-step-agent{font-weight:600;font-size:.85rem}
-.wf-step-desc{font-size:.78rem;color:var(--text2);line-height:1.5}
+.wf-step-line{
+  position:absolute;left:18px;top:40px;bottom:0;width:1px;
+  background:rgba(255,255,255,0.06);
+}
+.wf-step:last-child .wf-step-line{display:none}
+.wf-step-num{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:0.65rem;font-weight:700;
+  color:#fff;flex-shrink:0;position:relative;z-index:1;
+}
+.wf-step-content{padding-top:6px;flex:1}
+.wf-step-agent{font-size:0.88rem;font-weight:600;margin-bottom:2px}
+.wf-step-desc{font-size:0.8rem;color:var(--text-muted);line-height:1.5;font-weight:300}
 
-/* ROADMAP */
-.roadmap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px}
-.sprint-card{background:var(--surface);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius-lg);padding:32px;position:relative;overflow:hidden;transition:all .3s}
-.sprint-card:hover{border-color:rgba(255,255,255,.1)}
-.sprint-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent)}
-.sprint-num{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px}
-.sprint-title{font-size:1.15rem;font-weight:700;margin-bottom:6px}
-.sprint-agents{font-size:.8rem;color:var(--text2);margin-bottom:20px;display:flex;gap:8px;flex-wrap:wrap}
-.sprint-agents .agent-tag{background:var(--surface2);padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:500}
+/* ========== ROADMAP ========== */
+#roadmap{background:var(--bg2)}
+.roadmap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:56px}
+.sprint-card{
+  background:var(--surface);border:1px solid var(--surface-border);
+  border-radius:16px;padding:36px;position:relative;overflow:hidden;
+  transition:all 0.3s;
+}
+.sprint-card:hover{border-color:rgba(255,255,255,0.1)}
+.sprint-number{
+  font-family:var(--font-heading);font-size:4rem;font-weight:700;
+  color:rgba(255,255,255,0.04);position:absolute;top:-8px;right:24px;
+  line-height:1;
+}
+.sprint-label{
+  font-family:var(--font-mono);font-size:0.65rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
+  margin-bottom:10px;
+}
+.sprint-title{font-family:var(--font-heading);font-size:1.3rem;font-weight:600;margin-bottom:16px}
+.sprint-agents{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.sprint-agent-tag{
+  font-family:var(--font-mono);font-size:0.7rem;font-weight:500;
+  padding:4px 12px;border-radius:6px;
+  background:rgba(255,255,255,0.03);
+  border-left:3px solid;
+}
 .sprint-tasks{display:flex;flex-direction:column;gap:10px}
-.sprint-task{display:flex;gap:10px;font-size:.82rem;color:var(--text2);line-height:1.5}
-.sprint-task::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0}
+.sprint-task{
+  font-size:0.84rem;color:var(--text-secondary);line-height:1.55;
+  display:flex;gap:12px;font-weight:300;
+}
+.sprint-task::before{
+  content:'\2192';color:var(--gold);font-weight:600;flex-shrink:0;
+  font-size:0.9rem;
+}
 
-/* FOOTER */
-footer{border-top:1px solid rgba(255,255,255,.06);padding:40px 24px;text-align:center}
-footer .foot-logo{font-size:1.1rem;font-weight:700;margin-bottom:8px}
-footer .foot-sub{font-size:.8rem;color:var(--text3)}
+/* ========== FOOTER ========== */
+footer{border-top:1px solid var(--surface-border);padding:48px 40px;text-align:center}
+.footer-logo{
+  font-family:var(--font-heading);font-size:1.3rem;font-weight:600;
+  margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.footer-logo svg{width:22px;height:22px}
+.footer-sub{font-size:0.8rem;color:var(--text-muted);font-weight:400}
 
-/* ANIMATIONS */
-.fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
-.fade-in.visible{opacity:1;transform:translateY(0)}
+/* ========== ANIMATIONS ========== */
+.fade-up{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-up-delay-1{transition-delay:0.1s}
+.fade-up-delay-2{transition-delay:0.2s}
+.fade-up-delay-3{transition-delay:0.3s}
 
-/* RESPONSIVE */
-@media(max-width:900px){
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .arch-grid{grid-template-columns:1fr}
+/* ========== RESPONSIVE ========== */
+@media(min-width:1000px){
+  .agent-quote{display:block}
+}
+@media(max-width:1000px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
   .workflows-grid{grid-template-columns:1fr}
   .roadmap-grid{grid-template-columns:1fr}
-  .team-cards{grid-template-columns:1fr}
+  .agent-detail{grid-template-columns:1fr;gap:24px}
+  section{padding:100px 24px 80px}
+  .nav-inner{padding:0 24px}
+  .team-subnav-inner{padding:0 24px}
 }
-@media(max-width:640px){
-  .nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:rgba(10,10,10,.95);flex-direction:column;padding:16px;border-bottom:1px solid rgba(255,255,255,.06)}
-  .nav-links.open{display:flex}
+@media(max-width:700px){
+  .nav-tabs{display:none;position:absolute;top:72px;left:0;right:0;background:rgba(10,10,10,0.95);flex-direction:column;padding:16px;border-bottom:1px solid var(--surface-border);border-radius:0}
+  .nav-tabs.open{display:flex}
   .mobile-menu{display:block}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .org-stacks{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .hero-agents{gap:10px}
+  .hero-avatar{width:38px;height:38px}
+  .hero-avatar svg{width:18px;height:18px}
   section{padding:80px 16px 60px}
+  .nav-inner{padding:0 16px}
+  .agent-row{padding:16px 20px;gap:14px}
+  .agent-detail{padding:0 20px 20px;margin:0 20px}
+  .agent-avatar{width:44px;height:44px}
+  .agent-avatar svg{width:22px;height:22px}
+  .team-subnav-inner{padding:0 16px;gap:12px;overflow-x:auto}
 }
 </style>
 </head>
@@ -158,100 +385,116 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">
-      <span class="sun">&#9728;&#65039;</span> Apollo
-      <span class="subtitle">AI Workforce Blueprint</span>
+    <div class="nav-brand">
+      <div class="nav-logo">
+        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="6" fill="#D4A853"/><g stroke="#D4A853" stroke-width="2" stroke-linecap="round"><line x1="14" y1="1" x2="14" y2="5"/><line x1="14" y1="23" x2="14" y2="27"/><line x1="1" y1="14" x2="5" y2="14"/><line x1="23" y1="14" x2="27" y2="14"/><line x1="4.8" y1="4.8" x2="7.6" y2="7.6"/><line x1="20.4" y1="20.4" x2="23.2" y2="23.2"/><line x1="4.8" y1="23.2" x2="7.6" y2="20.4"/><line x1="20.4" y1="7.6" x2="23.2" y2="4.8"/></g></svg>
+        Apollo
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-subtitle">AI Workforce Blueprint</div>
     </div>
-    <div class="nav-links" id="navLinks">
-      <a href="#hero">Overview</a>
-      <a href="#team">The Team</a>
-      <a href="#workflows">How It Works</a>
-      <a href="#roadmap">Roadmap</a>
+    <div class="nav-tabs" id="navTabs">
+      <a href="#hero" class="nav-tab active" data-section="hero">Overview</a>
+      <a href="#team" class="nav-tab" data-section="team">The Team</a>
+      <a href="#workflows" class="nav-tab" data-section="workflows">How It Works</a>
+      <a href="#roadmap" class="nav-tab" data-section="roadmap">Roadmap</a>
     </div>
     <button class="mobile-menu" id="menuBtn" aria-label="Menu">&#9776;</button>
   </div>
 </nav>
 
+<!-- TEAM SUB-NAV -->
+<div class="team-subnav" id="teamSubnav">
+  <div class="team-subnav-inner">
+    <span class="team-subnav-label">Filter</span>
+    <button class="team-filter active" data-filter="all">All Agents</button>
+    <button class="team-filter" data-filter="orchestrator">Orchestrator</button>
+    <button class="team-filter" data-filter="operations">Operations</button>
+    <button class="team-filter" data-filter="growth">Growth</button>
+  </div>
+</div>
+
 <!-- HERO -->
 <section id="hero">
   <div class="container hero-content">
-    <div class="section-label">Apollo AI Workforce</div>
-    <h1 class="hero-title">Your AI Command <span class="highlight">Centre.</span></h1>
-    <p class="hero-subtitle">You're the founder of the fastest-growing apparel brand in America &mdash; $700M and climbing. Apollo is your AI twin. Fourteen agents. One empire. One vision.</p>
-    <div class="stats-row">
-      <div class="stat-card fade-in">
-        <div class="stat-value">1</div>
-        <div class="stat-label">Live Now &mdash; Apollo</div>
+    <div class="hero-eyebrow">Apollo AI Workforce</div>
+    <h1 class="hero-heading">Your AI Command<br><em>Centre.</em></h1>
+    <p class="hero-sub">You're the founder of the fastest-growing apparel brand in America &mdash; $700M and climbing. Apollo is your AI twin. Fourteen agents. One empire. One vision.</p>
+    <div class="hero-stats">
+      <div class="hero-stat fade-up">
+        <div class="hero-stat-value">1</div>
+        <div class="hero-stat-label">Live Now &mdash; Apollo</div>
       </div>
-      <div class="stat-card fade-in">
-        <div class="stat-value">14</div>
-        <div class="stat-label">Total Agents &mdash; Full Workforce</div>
+      <div class="hero-stat fade-up fade-up-delay-1">
+        <div class="hero-stat-value">14</div>
+        <div class="hero-stat-label">Total Agents</div>
       </div>
-      <div class="stat-card fade-in">
-        <div class="stat-value">$1B</div>
-        <div class="stat-label">Target Revenue &mdash; 2027</div>
+      <div class="hero-stat fade-up fade-up-delay-2">
+        <div class="hero-stat-value">$1B</div>
+        <div class="hero-stat-label">Revenue Target &mdash; 2027</div>
       </div>
-      <div class="stat-card fade-in">
-        <div class="stat-value">1M+</div>
-        <div class="stat-label">Customers &mdash; Community Goal</div>
+      <div class="hero-stat fade-up fade-up-delay-3">
+        <div class="hero-stat-value">1M+</div>
+        <div class="hero-stat-label">Community Goal</div>
       </div>
     </div>
-    <div class="avatar-row">
-      <span class="avatar-row-label">The Team</span>
-      <div class="avatar live" style="background:#D4A853" title="Apollo">AP</div>
-      <div class="avatar" style="background:#4A9EFF" title="Fin">FI</div>
-      <div class="avatar" style="background:#FF6B6B" title="Chain">CH</div>
-      <div class="avatar" style="background:#4ECDC4" title="Globe">GL</div>
-      <div class="avatar" style="background:#FF8C42" title="Vault">VA</div>
-      <div class="avatar" style="background:#A78BFA" title="Scout">SC</div>
-      <div class="avatar" style="background:#34D399" title="Sage">SA</div>
-      <div class="avatar" style="background:#F472B6" title="Maya">MA</div>
-      <div class="avatar" style="background:#FB923C" title="Kira">KI</div>
-      <div class="avatar" style="background:#818CF8" title="Pixel">PI</div>
-      <div class="avatar" style="background:#F87171" title="Pulse">PU</div>
-      <div class="avatar" style="background:#38BDF8" title="Cleo">CL</div>
-      <div class="avatar" style="background:#FBBF24" title="Forge">FO</div>
-      <div class="avatar" style="background:#A3E635" title="Nexus">NE</div>
-    </div>
-  </div>
-</section>
-
-<!-- ARCHITECTURE -->
-<section id="architecture">
-  <div class="container">
-    <div class="section-label">Architecture</div>
-    <h2 class="section-title fade-in">One brand. Thirteen agents. <span style="color:var(--accent)">One twin.</span></h2>
-    <div class="arch-grid">
-      <div class="arch-text fade-in">
-        <p>Comfort is one brand &mdash; the #1 hoodie in America, with a creator-powered growth engine unlike anything in DTC. Apollo sits at the apex: the only agent with full visibility across every department.</p>
-        <p>The <strong>Operations Stack</strong> handles what scale demands: finance, supply chain, inventory, and international expansion. The <strong>Growth Stack</strong> runs the engine: revenue, influencer, creative, performance marketing, customer intelligence, and product development.</p>
+    <div class="hero-agents">
+      <span class="hero-agents-label">The Team</span>
+      <!-- Apollo -->
+      <div class="hero-avatar live" style="background:#D4A853" title="Apollo">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fff"/><g stroke="#fff" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="5.6" y1="5.6" x2="7.8" y2="7.8"/><line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/><line x1="5.6" y1="18.4" x2="7.8" y2="16.2"/><line x1="16.2" y1="7.8" x2="18.4" y2="5.6"/></g></svg>
       </div>
-      <div class="org-chart fade-in">
-        <div class="org-apex">
-          <div class="org-node"><span class="node-dot"></span> Apollo &mdash; Master Orchestrator</div>
-        </div>
-        <div class="org-connector"></div>
-        <div class="org-stacks">
-          <div class="stack-col">
-            <div class="stack-title">Operations Stack</div>
-            <div class="stack-item"><span class="stack-dot" style="background:#4A9EFF"></span><span class="name">Fin</span><span class="role">&nbsp;&mdash; Finance</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#FF6B6B"></span><span class="name">Chain</span><span class="role">&nbsp;&mdash; Supply Chain</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#4ECDC4"></span><span class="name">Globe</span><span class="role">&nbsp;&mdash; International</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#FF8C42"></span><span class="name">Vault</span><span class="role">&nbsp;&mdash; Retail</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#34D399"></span><span class="name">Sage</span><span class="role">&nbsp;&mdash; Strategy</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#A78BFA"></span><span class="name">Scout</span><span class="role">&nbsp;&mdash; Intelligence</span></div>
-          </div>
-          <div class="stack-col">
-            <div class="stack-title">Growth Stack</div>
-            <div class="stack-item"><span class="stack-dot" style="background:#F472B6"></span><span class="name">Maya</span><span class="role">&nbsp;&mdash; Revenue</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#FB923C"></span><span class="name">Kira</span><span class="role">&nbsp;&mdash; Influencer</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#818CF8"></span><span class="name">Pixel</span><span class="role">&nbsp;&mdash; Creative</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#F87171"></span><span class="name">Pulse</span><span class="role">&nbsp;&mdash; Performance</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#38BDF8"></span><span class="name">Cleo</span><span class="role">&nbsp;&mdash; Customer</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#FBBF24"></span><span class="name">Forge</span><span class="role">&nbsp;&mdash; Product</span></div>
-            <div class="stack-item"><span class="stack-dot" style="background:#A3E635"></span><span class="name">Nexus</span><span class="role">&nbsp;&mdash; Community</span></div>
-          </div>
-        </div>
+      <!-- Fin -->
+      <div class="hero-avatar" style="background:#4A9EFF" title="Fin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><polyline points="3,18 8,10 13,14 21,4"/><polyline points="16,4 21,4 21,9"/></svg>
+      </div>
+      <!-- Chain -->
+      <div class="hero-avatar" style="background:#FF6B6B" title="Chain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><ellipse cx="9" cy="9" rx="4" ry="3" transform="rotate(-45 9 9)"/><ellipse cx="15" cy="15" rx="4" ry="3" transform="rotate(-45 15 15)"/></svg>
+      </div>
+      <!-- Globe -->
+      <div class="hero-avatar" style="background:#4ECDC4" title="Globe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+      </div>
+      <!-- Vault -->
+      <div class="hero-avatar" style="background:#FF8C42" title="Vault">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="1"/><polyline points="3,8 12,3 21,8"/><line x1="8" y1="20" x2="8" y2="14"/><line x1="16" y1="20" x2="16" y2="14"/></svg>
+      </div>
+      <!-- Scout -->
+      <div class="hero-avatar" style="background:#A78BFA" title="Scout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
+      </div>
+      <!-- Sage -->
+      <div class="hero-avatar" style="background:#34D399" title="Sage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M12 3C8 3 5 6 5 10c0 3 2 5 4 6v3h6v-3c2-1 4-3 4-6 0-4-3-7-7-7z"/><line x1="9" y1="22" x2="15" y2="22"/><line x1="10" y1="19" x2="14" y2="19"/></svg>
+      </div>
+      <!-- Maya -->
+      <div class="hero-avatar" style="background:#F472B6" title="Maya">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      </div>
+      <!-- Kira -->
+      <div class="hero-avatar" style="background:#FB923C" title="Kira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <!-- Pixel -->
+      <div class="hero-avatar" style="background:#818CF8" title="Pixel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 3s3 2 3 6-3 6-3 6"/><path d="M3 21l8-8 4 4"/><path d="M14 14l3-3 4 4"/></svg>
+      </div>
+      <!-- Pulse -->
+      <div class="hero-avatar" style="background:#F87171" title="Pulse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,12 6,12 9,3 12,21 15,12 18,12 22,12"/></svg>
+      </div>
+      <!-- Cleo -->
+      <div class="hero-avatar" style="background:#38BDF8" title="Cleo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M3 12a9 9 0 0018 0 9 9 0 00-18 0z"/><path d="M12 12c2 0 4-1.5 4-4s-2-4-4-4"/><path d="M12 12c2 0 4 1.5 4 4s-2 4-4 4"/></svg>
+      </div>
+      <!-- Forge -->
+      <div class="hero-avatar" style="background:#FBBF24" title="Forge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3l6 6-9 9-6-6z"/><path d="M3 21l3-3"/><path d="M6 18l-3 3"/></svg>
+      </div>
+      <!-- Nexus -->
+      <div class="hero-avatar" style="background:#A3E635" title="Nexus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><circle cx="12" cy="12" r="2.5"/><line x1="8" y1="7.5" x2="10" y2="10.5"/><line x1="16" y1="7.5" x2="14" y2="10.5"/><line x1="8" y1="16.5" x2="10" y2="13.5"/><line x1="16" y1="16.5" x2="14" y2="13.5"/></svg>
       </div>
     </div>
   </div>
@@ -261,177 +504,955 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
 <section id="team">
   <div class="container">
     <div class="section-label">The Team</div>
-    <h2 class="section-title fade-in">Meet your <span style="color:var(--accent)">13 agents.</span></h2>
-    <p class="team-intro section-subtitle fade-in">Click any card to expand their full profile.</p>
+    <h2 class="section-title fade-up">Meet your <em>fourteen agents.</em></h2>
+    <p class="section-desc fade-up" style="margin-bottom:48px">Click any agent to see their full profile, capabilities, and integrations.</p>
 
-    <div class="team-group">
-      <div class="team-group-title">Master Orchestrator</div>
-      <div class="team-cards">
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#D4A853">AP</div>
-            <div class="card-info"><div class="card-name">Apollo</div><div class="card-role">Master Orchestrator</div></div>
-            <span class="card-status live">Live</span>
+    <!-- MASTER ORCHESTRATOR -->
+    <div class="team-group" data-group="orchestrator">
+      <div class="team-group-label">Master Orchestrator</div>
+
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#D4A853">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="#fff"/><g stroke="#fff" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="5.6" y1="5.6" x2="7.8" y2="7.8"/><line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/><line x1="5.6" y1="18.4" x2="7.8" y2="16.2"/><line x1="16.2" y1="7.8" x2="18.4" y2="5.6"/></g></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"The one who sees the whole board."</div>
-            <div class="meta">apollo@comfrt.com &middot; All workspaces</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Apollo</div>
+            <div class="agent-role">Master Orchestrator</div>
+          </div>
+          <div class="agent-quote">"The one who sees the whole board."</div>
+          <span class="agent-status live">Live</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Apollo is the AI digital twin of Hudson Leogrande &mdash; founder of Comfort (COMFRT), the fastest-growing apparel brand in America. He sits at the apex of the entire operation: the only agent with full visibility across every department. He synthesizes signals from finance, operations, influencer, and growth into a single daily intelligence brief. He doesn't just execute &mdash; he decides what matters.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Intelligence</div>
+                <ul>
+                  <li>Morning brief: Shopify revenue + Meta spend + top 3 issues</li>
+                  <li>Telegram message triage &mdash; flags what needs Hudson, archives the rest</li>
+                  <li>Calendar management &mdash; meetings, launches, creator calls</li>
+                  <li>Cross-function anomaly detection &mdash; spots when something is off</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">CEO Decision Support</div>
+                <ul>
+                  <li>Synthesizes inputs from all 13 agents into one weekly CEO brief</li>
+                  <li>Flags decisions that require Hudson's attention vs. can be delegated</li>
+                  <li>Tracks OKRs across all departments in real time</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Primary orchestrator &mdash; receives daily digests from all agents and compiles the CEO morning brief.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Telegram (Full Access)</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4DD;</span> Notion (Read/Write)</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4E7;</span> Email</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4C5;</span> Calendar</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F310;</span> All Workspaces</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">All 13 agents</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">OpenClaw</span>
+                  <span class="agent-tag tool">Notion API</span>
+                  <span class="agent-tag tool">Telegram API</span>
+                  <span class="agent-tag tool">Shopify API</span>
+                  <span class="agent-tag tool">Composio</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="team-group">
-      <div class="team-group-title">Operations Stack</div>
-      <div class="team-cards">
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#4A9EFF">FI</div>
-            <div class="card-info"><div class="card-name">Fin</div><div class="card-role">Finance & P&L Intelligence</div></div>
-            <span class="card-status build-now">Build Now</span>
+    <!-- OPERATIONS STACK -->
+    <div class="team-group" data-group="operations">
+      <div class="team-group-label">Operations Stack</div>
+
+      <!-- Fin -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#4A9EFF">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><polyline points="3,18 8,10 13,14 21,4"/><polyline points="16,4 21,4 21,9"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"He lives in the numbers so you don't have to."</div>
-            <div class="meta">Operations workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Fin</div>
+            <div class="agent-role">Finance &amp; P&amp;L Intelligence</div>
+          </div>
+          <div class="agent-quote">"He lives in the numbers so you don't have to."</div>
+          <span class="agent-status phase-1">Phase 1</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#FF6B6B">CH</div>
-            <div class="card-info"><div class="card-name">Chain</div><div class="card-role">Supply Chain & Inventory</div></div>
-            <span class="card-status build-now">Build Now</span>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Fin is the financial nerve center of Comfort. He monitors every dollar flowing through the business &mdash; from $500K/day ad spend to manufacturing payments to revenue recognition. He doesn't wait for month-end to tell you something's wrong. He knows in real time.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Operations</div>
+                <ul>
+                  <li>Overnight P&amp;L signals, margin alerts, cash position</li>
+                  <li>Ad spend vs revenue tracking across Meta, TikTok, Google</li>
+                  <li>Manufacturing payment schedules and net-90 term tracking</li>
+                  <li>Revenue forecasting against $1B target</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect Shopify, banking APIs &mdash; daily P&amp;L and cash position brief live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4B0;</span> Shopify Revenue</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Banking APIs</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Northbeam</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F9EE;</span> P&amp;L Dashboard</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Maya</span>
+                  <span class="agent-tag paired">Chain</span>
+                  <span class="agent-tag paired">Sage</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Shopify API</span>
+                  <span class="agent-tag tool">Banking API</span>
+                  <span class="agent-tag tool">Northbeam API</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She knows where every hoodie is before you ask."</div>
-            <div class="meta">Operations workspace</div>
-          </div></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#4ECDC4">GL</div>
-            <div class="card-info"><div class="card-name">Globe</div><div class="card-role">International Expansion</div></div>
-            <span class="card-status build-now">Build Now</span>
+      </div>
+
+      <!-- Chain -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#FF6B6B">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><ellipse cx="9" cy="9" rx="4" ry="3" transform="rotate(-45 9 9)"/><ellipse cx="15" cy="15" rx="4" ry="3" transform="rotate(-45 15 15)"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"He opens new markets while you sleep."</div>
-            <div class="meta">Operations workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Chain</div>
+            <div class="agent-role">Supply Chain &amp; Inventory</div>
+          </div>
+          <div class="agent-quote">"She knows where every hoodie is before you ask."</div>
+          <span class="agent-status phase-1">Phase 1</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#FF8C42">VA</div>
-            <div class="card-info"><div class="card-name">Vault</div><div class="card-role">Retail Operations</div></div>
-            <span class="card-status build-now">Build Now</span>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Chain is the logistics brain of Comfort. She tracks every hoodie from manufacturer to customer &mdash; across China, Cambodia, and Vietnam. She knows when to reorder, when to shift production, and when a shipment is going to be late before the 3PL tells you.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Operations</div>
+                <ul>
+                  <li>Inventory levels by SKU, color, and size across all warehouses</li>
+                  <li>Stockout predictions and automatic reorder alerts</li>
+                  <li>3PL performance monitoring and shipping SLA tracking</li>
+                  <li>Manufacturing timeline tracking with net-90 payment terms</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect Shopify inventory, 3PL API &mdash; stockout alerts and supplier tracking live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4E6;</span> Shopify Inventory</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F69A;</span> 3PL API</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F3ED;</span> Manufacturing Dashboard</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Demand Forecasting</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Fin</span>
+                  <span class="agent-tag paired">Forge</span>
+                  <span class="agent-tag paired">Globe</span>
+                  <span class="agent-tag paired">Vault</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Shopify API</span>
+                  <span class="agent-tag tool">3PL API</span>
+                  <span class="agent-tag tool">Demand Planning Tools</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She builds stores that print money."</div>
-            <div class="meta">Operations workspace</div>
-          </div></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#A78BFA">SC</div>
-            <div class="card-info"><div class="card-name">Scout</div><div class="card-role">Intelligence & Research</div></div>
-            <span class="card-status build-next">Build Next</span>
+      </div>
+
+      <!-- Globe -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#4ECDC4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She finds what you didn't know to look for."</div>
-            <div class="meta">Operations workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Globe</div>
+            <div class="agent-role">International Expansion</div>
+          </div>
+          <div class="agent-quote">"He opens new markets while you sleep."</div>
+          <span class="agent-status phase-2">Phase 2</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#34D399">SA</div>
-            <div class="card-info"><div class="card-name">Sage</div><div class="card-role">Strategy & OKRs</div></div>
-            <span class="card-status build-next">Build Next</span>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Globe is the advance team for Comfort's global takeover. He's building the playbook to duplicate the US creator-powered growth engine in UK, Australia, Canada, and Europe. Every new market gets the same proven formula &mdash; local creators, local fulfillment, local media buying.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Key Focus Areas</div>
+                <ul>
+                  <li>UK launch planning: creator recruitment, 3PL setup, Meta/TikTok localization</li>
+                  <li>Australia TikTok Shop first-mover strategy</li>
+                  <li>Canada cross-border infrastructure</li>
+                  <li>EU market analysis: Germany, Netherlands, Nordics</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>International expansion tracker &mdash; UK, AU, CA, EU market entry playbooks.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F30D;</span> Market Research</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> International Analytics</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F91D;</span> Local Partner Database</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Chain</span>
+                  <span class="agent-tag paired">Kira</span>
+                  <span class="agent-tag paired">Pulse</span>
+                  <span class="agent-tag paired">Sage</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Market Research APIs</span>
+                  <span class="agent-tag tool">Logistics Planning Tools</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She sees around corners."</div>
-            <div class="meta">Operations workspace</div>
-          </div></div>
+        </div>
+      </div>
+
+      <!-- Vault -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#FF8C42">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="1"/><polyline points="3,8 12,3 21,8"/><line x1="8" y1="20" x2="8" y2="14"/><line x1="16" y1="20" x2="16" y2="14"/></svg>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">Vault</div>
+            <div class="agent-role">Retail Operations</div>
+          </div>
+          <div class="agent-quote">"She builds stores that print money."</div>
+          <span class="agent-status phase-2">Phase 2</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Vault is building Comfort's physical presence. Two flagship stores launching Q4 2026 &mdash; Mall of America and American Dream Mall &mdash; with a goal of 1 new store per month in 2027. She manages everything from lease negotiation to store buildout to hiring in-store teams.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Key Focus Areas</div>
+                <ul>
+                  <li>Mall of America (MN) and American Dream Mall (NJ) buildout tracking</li>
+                  <li>Store design standardization for rapid rollout</li>
+                  <li>In-store team hiring pipeline (8-10 people per location)</li>
+                  <li>Retail POS and inventory integration with Shopify</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Retail buildout tracker &mdash; Mall of America + American Dream Mall progress.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F3EC;</span> Retail Dashboard</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CB;</span> Construction PM Tools</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F465;</span> Hiring Pipeline</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Chain</span>
+                  <span class="agent-tag paired">Fin</span>
+                  <span class="agent-tag paired">Sage</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Project Management</span>
+                  <span class="agent-tag tool">Shopify POS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scout -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#A78BFA">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">Scout</div>
+            <div class="agent-role">Intelligence &amp; Research</div>
+          </div>
+          <div class="agent-quote">"She finds what you didn't know to look for."</div>
+          <span class="agent-status phase-3">Phase 3</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Scout is the eyes and ears of the operation. She monitors competitors, tracks market trends, and finds opportunities before anyone else sees them. She scans everything &mdash; social media, industry reports, patent filings, job postings &mdash; to keep Comfort ahead.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Key Focus Areas</div>
+                <ul>
+                  <li>Competitive intelligence on DTC apparel brands</li>
+                  <li>Market trend analysis and emerging category opportunities</li>
+                  <li>Content trend monitoring across TikTok, Instagram, YouTube</li>
+                  <li>Partnership and M&amp;A opportunity identification</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Competitive intelligence, market trends, deal pipeline live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F50D;</span> Web Research</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Industry Reports</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F3F7;&#xFE0F;</span> Competitor Tracking</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Sage</span>
+                  <span class="agent-tag paired">Brand</span>
+                  <span class="agent-tag paired">Pixel</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Web Scraping</span>
+                  <span class="agent-tag tool">Social Listening</span>
+                  <span class="agent-tag tool">Market Research APIs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sage -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#34D399">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M12 3C8 3 5 6 5 10c0 3 2 5 4 6v3h6v-3c2-1 4-3 4-6 0-4-3-7-7-7z"/><line x1="9" y1="22" x2="15" y2="22"/><line x1="10" y1="19" x2="14" y2="19"/></svg>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">Sage</div>
+            <div class="agent-role">Strategy &amp; OKRs</div>
+          </div>
+          <div class="agent-quote">"She sees around corners."</div>
+          <span class="agent-status phase-3">Phase 3</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Sage is the strategic brain. She maintains the company's North Star metrics, tracks OKRs across every department, and ensures every team is rowing in the same direction toward $1B. She sees around corners &mdash; connecting dots between departments that nobody else notices.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Key Focus Areas</div>
+                <ul>
+                  <li>Company-wide OKR tracking and alignment</li>
+                  <li>Weekly strategy digest and quarterly planning</li>
+                  <li>Department performance benchmarking</li>
+                  <li>Long-term growth modeling and scenario planning</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>OKR framework, weekly strategy digest, board narrative prep.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> OKR Dashboard</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Analytics</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CB;</span> Strategic Planning</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Fin</span>
+                  <span class="agent-tag paired">Scout</span>
+                  <span class="agent-tag paired">Globe</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Notion API</span>
+                  <span class="agent-tag tool">Analytics Tools</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="team-group">
-      <div class="team-group-title">Growth Stack</div>
-      <div class="team-cards">
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#F472B6">MA</div>
-            <div class="card-info"><div class="card-name">Maya</div><div class="card-role">Revenue & Performance</div></div>
-            <span class="card-status build-now">Build Now</span>
+    <!-- GROWTH STACK -->
+    <div class="team-group" data-group="growth">
+      <div class="team-group-label">Growth Stack</div>
+
+      <!-- Maya -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#F472B6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 7H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She lives in every dollar."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Maya</div>
+            <div class="agent-role">Revenue &amp; Performance</div>
+          </div>
+          <div class="agent-quote">"She lives in every dollar."</div>
+          <span class="agent-status phase-1">Phase 1</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#FB923C">KI</div>
-            <div class="card-info"><div class="card-name">Kira</div><div class="card-role">Influencer & Creator Ops</div></div>
-            <span class="card-status build-now">Build Now</span>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Maya lives in every dollar. She monitors Shopify revenue in real time, tracks Meta and TikTok ROAS, watches Northbeam attribution, and knows exactly which channels are printing money and which are bleeding. At $500K/day in ad spend, every percentage point matters.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Operations</div>
+                <ul>
+                  <li>Real-time Shopify revenue monitoring</li>
+                  <li>Meta Ads ROAS and spend tracking ($500K+/day)</li>
+                  <li>TikTok Ads performance and TikTok Shop revenue</li>
+                  <li>Northbeam attribution analysis (the "Lamborghini of tracking")</li>
+                  <li>Channel-level profitability analysis</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect Shopify, Meta Ads, TikTok, Northbeam &mdash; daily revenue brief live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F6D2;</span> Shopify</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Meta Ads</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F3B5;</span> TikTok Ads</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Northbeam</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4E7;</span> Klaviyo</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Fin</span>
+                  <span class="agent-tag paired">Pulse</span>
+                  <span class="agent-tag paired">Pixel</span>
+                  <span class="agent-tag paired">Kira</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Shopify API</span>
+                  <span class="agent-tag tool">Meta Marketing API</span>
+                  <span class="agent-tag tool">TikTok API</span>
+                  <span class="agent-tag tool">Northbeam API</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She builds the army that builds the brand."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#818CF8">PI</div>
-            <div class="card-info"><div class="card-name">Pixel</div><div class="card-role">Creative & Content Ops</div></div>
-            <span class="card-status build-now">Build Now</span>
+      </div>
+
+      <!-- Kira -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#FB923C">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She turns data into the brief that wins."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Kira</div>
+            <div class="agent-role">Influencer &amp; Creator Ops</div>
+          </div>
+          <div class="agent-quote">"She builds the army that builds the brand."</div>
+          <span class="agent-status phase-1">Phase 1</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#F87171">PU</div>
-            <div class="card-info"><div class="card-name">Pulse</div><div class="card-role">Performance Marketing</div></div>
-            <span class="card-status build-now">Build Now</span>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Kira builds the army that builds the brand. She manages 600,000+ affiliates, 500 core creators, and a library of 1M+. She tracks who's producing, who's converting, and who needs to be recruited next. The Comfort creator machine produces 5,000 videos per day &mdash; Kira makes sure they're all working.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Operations</div>
+                <ul>
+                  <li>Creator performance tracking (3-7 videos/day per creator)</li>
+                  <li>New creator recruitment and onboarding pipeline</li>
+                  <li>Yuka AI outreach integration (5,000 messages/day)</li>
+                  <li>Commission tracking and affiliate management</li>
+                  <li>Weekly call prep (5pm ET Thursdays)</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect TikTok, Instagram &mdash; creator tracking, Yuka AI integration, affiliate management.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F3AC;</span> TikTok Creator</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4F8;</span> Instagram API</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F916;</span> Yuka AI</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4B0;</span> Affiliate Dashboard</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Discord</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Maya</span>
+                  <span class="agent-tag paired">Pixel</span>
+                  <span class="agent-tag paired">Pulse</span>
+                  <span class="agent-tag paired">Nexus</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">TikTok API</span>
+                  <span class="agent-tag tool">Instagram API</span>
+                  <span class="agent-tag tool">Yuka AI</span>
+                  <span class="agent-tag tool">Affiliate Platform API</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"He optimizes every ad dollar until it screams."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#38BDF8">CL</div>
-            <div class="card-info"><div class="card-name">Cleo</div><div class="card-role">Customer Intelligence</div></div>
-            <span class="card-status build-now">Build Now</span>
+      </div>
+
+      <!-- Pixel -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#818CF8">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 3s3 2 3 6-3 6-3 6"/><path d="M3 21l8-8 4 4"/><path d="M14 14l3-3 4 4"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"She listens so you don't have to."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Pixel</div>
+            <div class="agent-role">Creative &amp; Content Ops</div>
+          </div>
+          <div class="agent-quote">"She turns data into the brief that wins."</div>
+          <span class="agent-status phase-2">Phase 2</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#FBBF24">FO</div>
-            <div class="card-info"><div class="card-name">Forge</div><div class="card-role">Product Development</div></div>
-            <span class="card-status build-next">Build Next</span>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Pixel turns data into the brief that wins. She analyzes which ad creatives are performing, what customer language resonates, and which content formats drive conversions. Every Monday, she synthesizes inputs from Maya, Cleo, Kira, and Pulse into the Weekly Creative Brief &mdash; the document that drives all content creation.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Weekly Creative Flywheel</div>
+                <ul>
+                  <li>Top-performing ad creatives by ROAS and CTR from Maya</li>
+                  <li>Customer language and review phrases from Cleo</li>
+                  <li>Best creator content for paid amplification from Kira</li>
+                  <li>Channel performance data and fatigue signals from Pulse</li>
+                  <li>Synthesizes into Weekly Creative Brief: hooks, angles, formats, AI tool recommendations</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect ad libraries &mdash; weekly creative brief auto-generated.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Ad Libraries</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F3A8;</span> Creative Analytics</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4DD;</span> Brief Generator</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Maya</span>
+                  <span class="agent-tag paired">Kira</span>
+                  <span class="agent-tag paired">Pulse</span>
+                  <span class="agent-tag paired">Cleo</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Meta Ad Library</span>
+                  <span class="agent-tag tool">TikTok Creative Center</span>
+                  <span class="agent-tag tool">AI Creative Tools</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"He builds what the customer demands."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
         </div>
-        <div class="team-card fade-in" onclick="toggleCard(this)">
-          <div class="card-header">
-            <div class="card-avatar" style="background:#A3E635">NE</div>
-            <div class="card-info"><div class="card-name">Nexus</div><div class="card-role">Community & Affiliates</div></div>
-            <span class="card-status build-next">Build Next</span>
+      </div>
+
+      <!-- Pulse -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#F87171">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,12 6,12 9,3 12,21 15,12 18,12 22,12"/></svg>
           </div>
-          <div class="card-expand"><div class="card-details">
-            <div class="quote">"He turns customers into evangelists."</div>
-            <div class="meta">Growth workspace</div>
-          </div></div>
+          <div class="agent-info">
+            <div class="agent-name">Pulse</div>
+            <div class="agent-role">Performance Marketing</div>
+          </div>
+          <div class="agent-quote">"He optimizes every ad dollar until it screams."</div>
+          <span class="agent-status phase-2">Phase 2</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Pulse optimizes every ad dollar until it screams. He manages the performance marketing stack across Meta, TikTok, and Google &mdash; monitoring ROAS in real time, flagging creative fatigue, and identifying scaling opportunities. At $500K/day heading to $1M/day in Q4, precision is everything.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Operations</div>
+                <ul>
+                  <li>Real-time ROAS monitoring across Meta, TikTok, Google</li>
+                  <li>Creative fatigue detection and rotation alerts</li>
+                  <li>Budget allocation optimization across channels</li>
+                  <li>Whitelisting performance tracking (Jen Selter, Josh Goldie, etc.)</li>
+                  <li>Spark Ads performance monitoring on TikTok</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect Meta, TikTok, Google Ads &mdash; performance monitoring and ROAS alerts live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Meta Ads Manager</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F3B5;</span> TikTok Ads</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F50D;</span> Google Ads</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Northbeam</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Maya</span>
+                  <span class="agent-tag paired">Pixel</span>
+                  <span class="agent-tag paired">Kira</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Meta Marketing API</span>
+                  <span class="agent-tag tool">TikTok Ads API</span>
+                  <span class="agent-tag tool">Google Ads API</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cleo -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#38BDF8">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><path d="M3 12a9 9 0 0018 0 9 9 0 00-18 0z"/><path d="M12 12c2 0 4-1.5 4-4s-2-4-4-4"/><path d="M12 12c2 0 4 1.5 4 4s-2 4-4 4"/></svg>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">Cleo</div>
+            <div class="agent-role">Customer Intelligence</div>
+          </div>
+          <div class="agent-quote">"She listens so you don't have to."</div>
+          <span class="agent-status phase-1">Phase 1</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Cleo listens so you don't have to. She monitors every customer review, support ticket, and social mention to understand what customers love and what needs fixing. With a 50% repeat purchase rate, keeping customers happy is everything.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Daily Operations</div>
+                <ul>
+                  <li>Review monitoring across all platforms</li>
+                  <li>Support ticket categorization and trend analysis</li>
+                  <li>NPS tracking and sentiment analysis</li>
+                  <li>Customer language extraction for marketing use</li>
+                  <li>Overnight alert digest for urgent issues</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect reviews, Gorgias &mdash; review digest and NPS monitoring live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x2B50;</span> Review Platforms</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F3A7;</span> Gorgias</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> NPS Dashboard</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Social Listening</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Pixel</span>
+                  <span class="agent-tag paired">Kira</span>
+                  <span class="agent-tag paired">Forge</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Gorgias API</span>
+                  <span class="agent-tag tool">Review Platform APIs</span>
+                  <span class="agent-tag tool">Sentiment Analysis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forge -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#FBBF24">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3l6 6-9 9-6-6z"/><path d="M3 21l3-3"/><path d="M6 18l-3 3"/></svg>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">Forge</div>
+            <div class="agent-role">Product Development</div>
+          </div>
+          <div class="agent-quote">"He builds what the customer demands."</div>
+          <span class="agent-status phase-3">Phase 3</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Forge builds what the customer demands. He tracks product performance data, monitors competitor launches, and works with VP of Product May to plan the next collection. From the original hoodie that started it all to blankets and loungewear &mdash; Forge knows what's coming next.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Key Focus Areas</div>
+                <ul>
+                  <li>Product performance analytics (sell-through, return rates, reviews)</li>
+                  <li>Competitor product monitoring and gap analysis</li>
+                  <li>New product development pipeline tracking</li>
+                  <li>Manufacturing coordination with China, Cambodia, Vietnam suppliers</li>
+                  <li>Seasonal collection planning and trend forecasting</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect product roadmap &mdash; weekly NPD digest live.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F3ED;</span> Product Pipeline</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Sales Analytics</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F52C;</span> Trend Research</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Chain</span>
+                  <span class="agent-tag paired">Cleo</span>
+                  <span class="agent-tag paired">Maya</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Shopify Product API</span>
+                  <span class="agent-tag tool">Trend Analysis Tools</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nexus -->
+      <div class="agent-card" onclick="toggleAgent(this)">
+        <div class="agent-row">
+          <div class="agent-avatar" style="background:#A3E635">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><circle cx="12" cy="12" r="2.5"/><line x1="8" y1="7.5" x2="10" y2="10.5"/><line x1="16" y1="7.5" x2="14" y2="10.5"/><line x1="8" y1="16.5" x2="10" y2="13.5"/><line x1="16" y1="16.5" x2="14" y2="13.5"/></svg>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">Nexus</div>
+            <div class="agent-role">Community &amp; Affiliates</div>
+          </div>
+          <div class="agent-quote">"He turns customers into evangelists."</div>
+          <span class="agent-status phase-2">Phase 2</span>
+          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
+        </div>
+        <div class="agent-expand">
+          <div class="agent-detail">
+            <div class="agent-detail-left">
+              <p class="agent-about">Nexus turns customers into evangelists. He manages the Discord community (education hub, weekly breakdowns, tier-based channels), tracks affiliate engagement, and ensures the community flywheel keeps spinning. It takes 13 touchpoints for a Comfort customer to buy &mdash; Nexus makes sure every touchpoint counts.</p>
+              <div class="agent-section">
+                <div class="agent-section-title">Key Focus Areas</div>
+                <ul>
+                  <li>Discord community management and engagement metrics</li>
+                  <li>Affiliate program health (600K+ affiliates)</li>
+                  <li>Customer-to-affiliate conversion tracking</li>
+                  <li>Community content curation (top videos, bestsellers, color trends)</li>
+                  <li>Weekly onboarding call coordination</li>
+                </ul>
+              </div>
+              <div class="agent-section">
+                <div class="agent-section-title">Setup Note</div>
+                <ul>
+                  <li>Connect Discord &mdash; affiliate engagement and community health monitoring.</li>
+                </ul>
+              </div>
+            </div>
+            <div class="agent-detail-right">
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Base Access</div>
+                <div class="agent-access-list">
+                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Discord</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F91D;</span> Affiliate Platform</div>
+                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Community Analytics</div>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Paired With</div>
+                <div class="agent-tags">
+                  <span class="agent-tag paired">Apollo</span>
+                  <span class="agent-tag paired">Kira</span>
+                  <span class="agent-tag paired">Cleo</span>
+                  <span class="agent-tag paired">Maya</span>
+                </div>
+              </div>
+              <div class="agent-meta-block">
+                <div class="agent-meta-title">Tools &amp; Integrations</div>
+                <div class="agent-tags">
+                  <span class="agent-tag tool">Discord API</span>
+                  <span class="agent-tag tool">Affiliate Platform API</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -442,47 +1463,47 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
 <section id="workflows">
   <div class="container">
     <div class="section-label">How It Works</div>
-    <h2 class="section-title fade-in">Three workflows that run <span style="color:var(--accent)">without you.</span></h2>
-    <p class="section-subtitle fade-in">Automated intelligence loops that keep you informed and the business moving &mdash; every day, every week.</p>
+    <h2 class="section-title fade-up">Three workflows that run <em>without you.</em></h2>
+    <p class="section-desc fade-up">Automated intelligence loops that keep you informed and the business moving &mdash; every day, every week.</p>
     <div class="workflows-grid">
 
-      <div class="workflow-card fade-in">
-        <div class="wf-badge">Daily</div>
+      <div class="workflow-card fade-up">
+        <div class="wf-type">Daily</div>
         <div class="wf-title">The Morning Brief</div>
         <div class="wf-time">8:00 AM ET &middot; Every Day</div>
         <div class="wf-steps">
-          <div class="wf-step"><div class="wf-step-dot" style="background:#F472B6">MA</div><div class="wf-step-text"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Pulls Shopify revenue, Meta ROAS, TikTok ROAS from last 24 hours</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#4A9EFF">FI</div><div class="wf-step-text"><div class="wf-step-agent">Fin</div><div class="wf-step-desc">Pulls overnight P&L signals, margin alerts, cash position</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#FB923C">KI</div><div class="wf-step-text"><div class="wf-step-agent">Kira</div><div class="wf-step-desc">Pulls top-performing creator content and new creator applications</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#38BDF8">CL</div><div class="wf-step-text"><div class="wf-step-agent">Cleo</div><div class="wf-step-desc">Pulls overnight review alerts and top support issues</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#FF6B6B">CH</div><div class="wf-step-text"><div class="wf-step-agent">Chain</div><div class="wf-step-desc">Pulls inventory alerts, stockout warnings, shipment updates</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#D4A853">AP</div><div class="wf-step-text"><div class="wf-step-agent">Apollo</div><div class="wf-step-desc">Compiles everything into one Telegram message to Hudson. 8am, every day.</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#F472B6">1</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Pulls Shopify revenue, Meta ROAS, TikTok ROAS from last 24 hours</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#4A9EFF">2</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Fin</div><div class="wf-step-desc">Pulls overnight P&amp;L signals, margin alerts, cash position</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#FB923C">3</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Kira</div><div class="wf-step-desc">Pulls top-performing creator content and new creator applications</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#38BDF8">4</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Cleo</div><div class="wf-step-desc">Pulls overnight review alerts and top support issues</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#FF6B6B">5</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Chain</div><div class="wf-step-desc">Pulls inventory alerts, stockout warnings, shipment updates</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#D4A853">6</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Apollo</div><div class="wf-step-desc">Compiles everything into one Telegram message to Hudson. 8am, every day.</div></div></div>
         </div>
       </div>
 
-      <div class="workflow-card fade-in">
-        <div class="wf-badge">Weekly</div>
+      <div class="workflow-card fade-up fade-up-delay-1">
+        <div class="wf-type">Weekly</div>
         <div class="wf-title">The Creative Flywheel</div>
         <div class="wf-time">Every Monday</div>
         <div class="wf-steps">
-          <div class="wf-step"><div class="wf-step-dot" style="background:#F472B6">MA</div><div class="wf-step-text"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Sends Pixel last week's top-performing ad creatives by ROAS and CTR</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#38BDF8">CL</div><div class="wf-step-text"><div class="wf-step-agent">Cleo</div><div class="wf-step-desc">Sends Pixel top review phrases and recurring customer language</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#FB923C">KI</div><div class="wf-step-text"><div class="wf-step-agent">Kira</div><div class="wf-step-desc">Sends Pixel which creator content performed best in paid amplification</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#F87171">PU</div><div class="wf-step-text"><div class="wf-step-agent">Pulse</div><div class="wf-step-desc">Sends Pixel channel-level performance data and creative fatigue signals</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#818CF8">PI</div><div class="wf-step-text"><div class="wf-step-agent">Pixel</div><div class="wf-step-desc">Synthesizes all inputs into the Weekly Creative Brief &mdash; hooks, angles, formats, AI tool recs</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#F472B6">1</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Sends Pixel last week's top-performing ad creatives by ROAS and CTR</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#38BDF8">2</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Cleo</div><div class="wf-step-desc">Sends Pixel top review phrases and recurring customer language</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#FB923C">3</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Kira</div><div class="wf-step-desc">Sends Pixel which creator content performed best in paid amplification</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#F87171">4</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Pulse</div><div class="wf-step-desc">Sends Pixel channel-level performance data and creative fatigue signals</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#818CF8">5</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Pixel</div><div class="wf-step-desc">Synthesizes all inputs into the Weekly Creative Brief &mdash; hooks, angles, formats, AI tool recs</div></div></div>
         </div>
       </div>
 
-      <div class="workflow-card fade-in">
-        <div class="wf-badge">Weekly</div>
+      <div class="workflow-card fade-up fade-up-delay-2">
+        <div class="wf-type">Weekly</div>
         <div class="wf-title">The Numbers Review</div>
         <div class="wf-time">Every Friday</div>
         <div class="wf-steps">
-          <div class="wf-step"><div class="wf-step-dot" style="background:#F472B6">MA</div><div class="wf-step-text"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Compiles week's revenue, ROAS, and subscription metrics</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#4A9EFF">FI</div><div class="wf-step-text"><div class="wf-step-agent">Fin</div><div class="wf-step-desc">Prepares weekly P&L summary &mdash; revenue vs target, margin vs budget, cash position</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#4ECDC4">GL</div><div class="wf-step-text"><div class="wf-step-agent">Globe</div><div class="wf-step-desc">International market entry progress &mdash; UK, AU, CA pipeline status</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#FF8C42">VA</div><div class="wf-step-text"><div class="wf-step-agent">Vault</div><div class="wf-step-desc">Retail buildout progress &mdash; Mall of America, American Dream Mall status</div></div></div>
-          <div class="wf-step"><div class="wf-step-dot" style="background:#D4A853">AP</div><div class="wf-step-text"><div class="wf-step-agent">Apollo</div><div class="wf-step-desc">Sends Hudson a Friday digest &mdash; financials, growth, expansion. One message.</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#F472B6">1</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Maya</div><div class="wf-step-desc">Compiles week's revenue, ROAS, and subscription metrics</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#4A9EFF">2</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Fin</div><div class="wf-step-desc">Prepares weekly P&amp;L summary &mdash; revenue vs target, margin vs budget, cash position</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#4ECDC4">3</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Globe</div><div class="wf-step-desc">International market entry progress &mdash; UK, AU, CA pipeline status</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#FF8C42">4</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Vault</div><div class="wf-step-desc">Retail buildout progress &mdash; Mall of America, American Dream Mall status</div></div></div>
+          <div class="wf-step"><div class="wf-step-num" style="background:#D4A853">5</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Apollo</div><div class="wf-step-desc">Sends Hudson a Friday digest &mdash; financials, growth, expansion. One message.</div></div></div>
         </div>
       </div>
 
@@ -494,33 +1515,35 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
 <section id="roadmap">
   <div class="container">
     <div class="section-label">Roadmap</div>
-    <h2 class="section-title fade-in">14 agents. <span style="color:var(--accent)">14 days.</span></h2>
-    <p class="section-subtitle fade-in">All 14 agents deployed and fully operational within two weeks.</p>
+    <h2 class="section-title fade-up">14 agents. <em>14 days.</em></h2>
+    <p class="section-desc fade-up">All 14 agents deployed and fully operational within two weeks.</p>
     <div class="roadmap-grid">
 
-      <div class="sprint-card fade-in">
-        <div class="sprint-num">Sprint 01</div>
+      <div class="sprint-card fade-up">
+        <div class="sprint-number">01</div>
+        <div class="sprint-label">Sprint 01</div>
         <div class="sprint-title">Days 1&ndash;3 &mdash; Command Centre Online</div>
         <div class="sprint-agents">
-          <span class="agent-tag" style="border-left:3px solid #D4A853">Apollo</span>
-          <span class="agent-tag" style="border-left:3px solid #4A9EFF">Fin</span>
-          <span class="agent-tag" style="border-left:3px solid #F472B6">Maya</span>
+          <span class="sprint-agent-tag" style="border-color:#D4A853;color:#D4A853">Apollo</span>
+          <span class="sprint-agent-tag" style="border-color:#4A9EFF;color:#4A9EFF">Fin</span>
+          <span class="sprint-agent-tag" style="border-color:#F472B6;color:#F472B6">Maya</span>
         </div>
         <div class="sprint-tasks">
           <div class="sprint-task">Apollo: Configure as master orchestrator &mdash; connect Telegram, Notion, email</div>
           <div class="sprint-task">Apollo: Morning brief live &mdash; Shopify revenue + Meta spend + top 3 issues</div>
-          <div class="sprint-task">Fin: Connect Shopify, banking &mdash; daily P&L and cash position brief live</div>
+          <div class="sprint-task">Fin: Connect Shopify, banking &mdash; daily P&amp;L and cash position brief live</div>
           <div class="sprint-task">Maya: Connect Shopify, Meta Ads, Northbeam &mdash; daily revenue brief live</div>
         </div>
       </div>
 
-      <div class="sprint-card fade-in">
-        <div class="sprint-num">Sprint 02</div>
+      <div class="sprint-card fade-up fade-up-delay-1">
+        <div class="sprint-number">02</div>
+        <div class="sprint-label">Sprint 02</div>
         <div class="sprint-title">Days 4&ndash;7 &mdash; Operations Stack Live</div>
         <div class="sprint-agents">
-          <span class="agent-tag" style="border-left:3px solid #FF6B6B">Chain</span>
-          <span class="agent-tag" style="border-left:3px solid #FB923C">Kira</span>
-          <span class="agent-tag" style="border-left:3px solid #38BDF8">Cleo</span>
+          <span class="sprint-agent-tag" style="border-color:#FF6B6B;color:#FF6B6B">Chain</span>
+          <span class="sprint-agent-tag" style="border-color:#FB923C;color:#FB923C">Kira</span>
+          <span class="sprint-agent-tag" style="border-color:#38BDF8;color:#38BDF8">Cleo</span>
         </div>
         <div class="sprint-tasks">
           <div class="sprint-task">Chain: Connect Shopify inventory, 3PL API &mdash; stockout alerts live</div>
@@ -529,15 +1552,16 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
         </div>
       </div>
 
-      <div class="sprint-card fade-in">
-        <div class="sprint-num">Sprint 03</div>
+      <div class="sprint-card fade-up fade-up-delay-2">
+        <div class="sprint-number">03</div>
+        <div class="sprint-label">Sprint 03</div>
         <div class="sprint-title">Days 8&ndash;11 &mdash; Growth Engine</div>
         <div class="sprint-agents">
-          <span class="agent-tag" style="border-left:3px solid #F87171">Pulse</span>
-          <span class="agent-tag" style="border-left:3px solid #818CF8">Pixel</span>
-          <span class="agent-tag" style="border-left:3px solid #4ECDC4">Globe</span>
-          <span class="agent-tag" style="border-left:3px solid #FF8C42">Vault</span>
-          <span class="agent-tag" style="border-left:3px solid #A3E635">Nexus</span>
+          <span class="sprint-agent-tag" style="border-color:#F87171;color:#F87171">Pulse</span>
+          <span class="sprint-agent-tag" style="border-color:#818CF8;color:#818CF8">Pixel</span>
+          <span class="sprint-agent-tag" style="border-color:#4ECDC4;color:#4ECDC4">Globe</span>
+          <span class="sprint-agent-tag" style="border-color:#FF8C42;color:#FF8C42">Vault</span>
+          <span class="sprint-agent-tag" style="border-color:#A3E635;color:#A3E635">Nexus</span>
         </div>
         <div class="sprint-tasks">
           <div class="sprint-task">Pulse: Connect Meta, TikTok, Google Ads &mdash; performance monitoring and ROAS alerts</div>
@@ -548,13 +1572,14 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
         </div>
       </div>
 
-      <div class="sprint-card fade-in">
-        <div class="sprint-num">Sprint 04</div>
+      <div class="sprint-card fade-up fade-up-delay-3">
+        <div class="sprint-number">04</div>
+        <div class="sprint-label">Sprint 04</div>
         <div class="sprint-title">Days 12&ndash;14 &mdash; Full Operation</div>
         <div class="sprint-agents">
-          <span class="agent-tag" style="border-left:3px solid #FBBF24">Forge</span>
-          <span class="agent-tag" style="border-left:3px solid #A78BFA">Scout</span>
-          <span class="agent-tag" style="border-left:3px solid #34D399">Sage</span>
+          <span class="sprint-agent-tag" style="border-color:#FBBF24;color:#FBBF24">Forge</span>
+          <span class="sprint-agent-tag" style="border-color:#A78BFA;color:#A78BFA">Scout</span>
+          <span class="sprint-agent-tag" style="border-color:#34D399;color:#34D399">Sage</span>
         </div>
         <div class="sprint-tasks">
           <div class="sprint-task">Forge: Connect product roadmap &mdash; weekly NPD digest live</div>
@@ -571,29 +1596,108 @@ footer .foot-sub{font-size:.8rem;color:var(--text3)}
 <!-- FOOTER -->
 <footer>
   <div class="container">
-    <div class="foot-logo">&#9728;&#65039; Apollo</div>
-    <div class="foot-sub">Comfort &middot; AI Workforce Blueprint &middot; 2026</div>
-    <div class="foot-sub" style="margin-top:8px"><a href="https://comfrt.com" target="_blank" rel="noopener">comfrt.com</a></div>
+    <div class="footer-logo">
+      <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="6" fill="#D4A853"/><g stroke="#D4A853" stroke-width="2" stroke-linecap="round"><line x1="14" y1="1" x2="14" y2="5"/><line x1="14" y1="23" x2="14" y2="27"/><line x1="1" y1="14" x2="5" y2="14"/><line x1="23" y1="14" x2="27" y2="14"/><line x1="4.8" y1="4.8" x2="7.6" y2="7.6"/><line x1="20.4" y1="20.4" x2="23.2" y2="23.2"/><line x1="4.8" y1="23.2" x2="7.6" y2="20.4"/><line x1="20.4" y1="7.6" x2="23.2" y2="4.8"/></g></svg>
+      Apollo
+    </div>
+    <div class="footer-sub">Comfort &middot; AI Workforce Blueprint &middot; 2026</div>
+    <div class="footer-sub" style="margin-top:8px"><a href="https://comfrt.com" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none">comfrt.com</a></div>
   </div>
 </footer>
 
 <script>
-// Card expand/collapse
-function toggleCard(card){card.classList.toggle('expanded')}
+// Toggle agent card expand/collapse
+function toggleAgent(card) {
+  var wasExpanded = card.classList.contains('expanded');
+  // Close all other cards
+  document.querySelectorAll('.agent-card.expanded').forEach(function(c) {
+    if (c !== card) c.classList.remove('expanded');
+  });
+  // Toggle this card
+  if (wasExpanded) {
+    card.classList.remove('expanded');
+  } else {
+    card.classList.add('expanded');
+    // Scroll into view with offset
+    setTimeout(function() {
+      var rect = card.getBoundingClientRect();
+      var offset = 140;
+      if (rect.top < offset) {
+        window.scrollBy({ top: rect.top - offset, behavior: 'smooth' });
+      }
+    }, 100);
+  }
+}
 
-// Mobile menu
-document.getElementById('menuBtn').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open')});
+// Mobile menu toggle
+document.getElementById('menuBtn').addEventListener('click', function() {
+  document.getElementById('navTabs').classList.toggle('open');
+});
 
 // Close mobile menu on link click
-document.querySelectorAll('.nav-links a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open')})});
+document.querySelectorAll('.nav-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.getElementById('navTabs').classList.remove('open');
+  });
+});
 
-// Scroll fade-in
-(function(){
-  var els=document.querySelectorAll('.fade-in');
-  var observer=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})
-  },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
-  els.forEach(function(el){observer.observe(el)});
+// Active nav tab on scroll
+var sections = document.querySelectorAll('section[id]');
+var navTabs = document.querySelectorAll('.nav-tab[data-section]');
+function updateActiveTab() {
+  var scrollY = window.scrollY + 200;
+  sections.forEach(function(section) {
+    var top = section.offsetTop;
+    var height = section.offsetHeight;
+    var id = section.getAttribute('id');
+    if (scrollY >= top && scrollY < top + height) {
+      navTabs.forEach(function(tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-section') === id);
+      });
+    }
+  });
+}
+window.addEventListener('scroll', updateActiveTab, { passive: true });
+
+// Team sub-nav visibility
+var teamSection = document.getElementById('team');
+var teamSubnav = document.getElementById('teamSubnav');
+function updateSubnav() {
+  if (!teamSection || !teamSubnav) return;
+  var rect = teamSection.getBoundingClientRect();
+  var visible = rect.top <= 72 && rect.bottom > 200;
+  teamSubnav.classList.toggle('visible', visible);
+}
+window.addEventListener('scroll', updateSubnav, { passive: true });
+
+// Team filter
+document.querySelectorAll('.team-filter').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.team-filter').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var filter = btn.getAttribute('data-filter');
+    document.querySelectorAll('.team-group').forEach(function(group) {
+      if (filter === 'all') {
+        group.style.display = '';
+      } else {
+        group.style.display = group.getAttribute('data-group') === filter ? '' : 'none';
+      }
+    });
+  });
+});
+
+// Scroll fade-in animations
+(function() {
+  var els = document.querySelectorAll('.fade-up');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(function(el) { observer.observe(el); });
 })();
 </script>
 </body>
