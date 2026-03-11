@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hudson AI — AI Workforce Blueprint</title>
+<title>Apollo Command Centre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,6 +23,9 @@
   --text:#ffffff;
   --text-secondary:#999999;
   --text-muted:#666666;
+  --blue:#5B9BD5;
+  --blue-dim:rgba(91,155,213,0.15);
+  --blue-border:rgba(91,155,213,0.3);
   --font-heading:'Cormorant Garamond', Georgia, serif;
   --font-body:'Outfit', system-ui, sans-serif;
   --font-mono:'JetBrains Mono', monospace;
@@ -38,1805 +41,732 @@ body{
 }
 ::selection{background:var(--gold-dim);color:var(--gold-light)}
 
-/* ========== NAV ========== */
-nav{
+/* ========== TOP BAR ========== */
+.topbar{
   position:fixed;top:0;left:0;right:0;z-index:1000;
-  background:rgba(10,10,10,0.8);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(10,10,10,0.85);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
   border-bottom:1px solid var(--surface-border);
-  transition:all 0.3s;
+  height:64px;display:flex;align-items:center;
+  padding:0 32px;
 }
-.nav-inner{
-  max-width:1280px;margin:0 auto;padding:0 40px;
-  height:72px;display:flex;align-items:center;justify-content:space-between;
-}
-.nav-brand{display:flex;align-items:center;gap:16px}
-.nav-logo{
-  font-family:var(--font-heading);font-size:1.5rem;font-weight:600;
+.topbar-left{display:flex;align-items:center;gap:14px;flex:1}
+.topbar-logo{
+  font-family:var(--font-heading);font-size:1.35rem;font-weight:600;
   color:var(--text);display:flex;align-items:center;gap:10px;
-  letter-spacing:-0.01em;
+  letter-spacing:-0.01em;white-space:nowrap;
 }
-.nav-logo svg{width:28px;height:28px}
-.nav-divider{width:1px;height:24px;background:var(--surface-border)}
-.nav-subtitle{font-size:0.8rem;color:var(--text-muted);font-weight:400;letter-spacing:0.05em;text-transform:uppercase}
-.nav-tabs{display:flex;gap:4px;background:rgba(255,255,255,0.03);border-radius:10px;padding:4px}
-.nav-tab{
-  padding:8px 20px;border-radius:8px;font-size:0.85rem;font-weight:500;
-  color:var(--text-secondary);cursor:pointer;transition:all 0.2s;
-  background:none;border:none;font-family:var(--font-body);
-  text-decoration:none;
+.topbar-logo svg{width:26px;height:26px;flex-shrink:0}
+.topbar-divider{width:1px;height:24px;background:var(--surface-border);flex-shrink:0}
+.topbar-label{font-size:0.78rem;color:var(--text-muted);font-weight:400;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap}
+.topbar-center{flex:1;text-align:center}
+.topbar-clock{
+  font-family:var(--font-mono);font-size:0.82rem;color:var(--text-secondary);
+  letter-spacing:0.03em;white-space:nowrap;
 }
-.nav-tab:hover{color:var(--text)}
-.nav-tab.active{background:rgba(255,255,255,0.08);color:var(--text)}
-.mobile-menu{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:8px}
+.topbar-right{flex:1;display:flex;justify-content:flex-end}
+.status-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:100px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--surface-border);
+  font-size:0.78rem;font-weight:500;
+  color:var(--text-secondary);letter-spacing:0.02em;
+}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#4ADE80;
+  box-shadow:0 0 8px rgba(74,222,128,0.5);
+  animation:pulse-green 2s ease-in-out infinite;
+}
+.status-dot.degraded{
+  background:#F87171;
+  box-shadow:0 0 8px rgba(248,113,113,0.5);
+  animation:pulse-red 2s ease-in-out infinite;
+}
+@keyframes pulse-green{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes pulse-red{0%,100%{opacity:1}50%{opacity:0.5}}
 
-/* ========== TEAM SUB-NAV ========== */
-.team-subnav{
-  position:fixed;top:72px;left:0;right:0;z-index:999;
-  background:rgba(10,10,10,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+/* ========== MAIN LAYOUT ========== */
+.dashboard{
+  margin-top:64px;
+  display:grid;
+  grid-template-columns:1fr 360px;
+  min-height:calc(100vh - 64px);
+}
+.main-content{padding:40px 40px 60px;overflow-y:auto}
+.sidebar{
+  border-left:1px solid var(--surface-border);
+  background:var(--bg2);
+  padding:32px 24px;
+  overflow-y:auto;
+  max-height:calc(100vh - 64px);
+  position:sticky;top:64px;
+}
+
+/* ========== DASHBOARD HEADER ========== */
+.dash-header{margin-bottom:40px}
+.dash-title{
+  font-family:var(--font-heading);font-size:2.4rem;font-weight:600;
+  color:var(--text);letter-spacing:-0.02em;line-height:1.2;
+}
+.dash-subtitle{
+  font-size:0.9rem;color:var(--text-muted);margin-top:6px;
+  font-weight:400;letter-spacing:0.02em;
+}
+
+/* ========== METRIC CARDS ========== */
+.metrics-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+  margin-top:28px;
+}
+.metric-card{
+  background:var(--surface);
+  border:1px solid var(--surface-border);
+  border-radius:14px;
+  padding:20px 22px;
+  transition:border-color 0.2s;
+}
+.metric-card:hover{border-color:rgba(255,255,255,0.1)}
+.metric-label{
+  font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:0.08em;font-weight:600;margin-bottom:8px;
+}
+.metric-value{
+  font-family:var(--font-heading);font-size:2rem;font-weight:600;
+  color:var(--text);line-height:1;
+}
+.metric-sub{font-size:0.72rem;color:var(--text-muted);margin-top:6px}
+
+/* ========== SECTION LABELS ========== */
+.section-group{margin-bottom:48px}
+.section-group:last-child{margin-bottom:0}
+.group-label{
+  font-family:var(--font-mono);font-size:0.7rem;font-weight:600;
+  color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;
+  margin-bottom:20px;
+  padding-bottom:10px;
   border-bottom:1px solid var(--surface-border);
-  transform:translateY(-100%);opacity:0;
-  transition:transform 0.3s ease, opacity 0.3s ease;
-  pointer-events:none;
+  display:flex;align-items:center;gap:8px;
 }
-.team-subnav.visible{transform:translateY(0);opacity:1;pointer-events:auto}
-.team-subnav-inner{
-  max-width:1280px;margin:0 auto;padding:0 40px;
-  height:52px;display:flex;align-items:center;gap:24px;
-}
-.team-subnav-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
-.team-filter{
-  padding:6px 14px;border-radius:6px;font-size:0.8rem;font-weight:500;
-  color:var(--text-secondary);cursor:pointer;transition:all 0.2s;
-  background:none;border:1px solid transparent;font-family:var(--font-body);
-}
-.team-filter:hover{color:var(--text)}
-.team-filter.active{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-border)}
-
-/* ========== SECTIONS ========== */
-section{padding:120px 40px 100px}
-.container{max-width:1280px;margin:0 auto}
-.section-label{
-  font-family:var(--font-mono);font-size:0.75rem;font-weight:500;
-  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
-  margin-bottom:16px;
-}
-.section-title{
-  font-family:var(--font-heading);font-size:clamp(2.4rem,5vw,3.8rem);
-  font-weight:400;line-height:1.15;margin-bottom:20px;letter-spacing:-0.02em;
-}
-.section-title em{font-style:italic;color:var(--gold)}
-.section-desc{font-size:1.05rem;color:var(--text-secondary);max-width:640px;line-height:1.7;font-weight:300}
-
-/* ========== HERO ========== */
-#hero{min-height:100vh;display:flex;align-items:center;padding-top:72px;position:relative;overflow:hidden}
-#hero::before{
-  content:'';position:absolute;top:-300px;left:50%;transform:translateX(-50%);
-  width:1000px;height:1000px;
-  background:radial-gradient(circle,rgba(212,168,83,0.06) 0%,transparent 60%);
-  pointer-events:none;
-}
-.hero-content{position:relative;z-index:1;width:100%}
-.hero-eyebrow{
-  font-family:var(--font-mono);font-size:0.8rem;font-weight:500;
-  color:var(--gold);letter-spacing:0.12em;text-transform:uppercase;
-  margin-bottom:24px;display:flex;align-items:center;gap:12px;
-}
-.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--gold)}
-.hero-heading{
-  font-family:var(--font-heading);
-  font-size:clamp(3rem,7vw,5.5rem);font-weight:400;
-  line-height:1.05;margin-bottom:28px;letter-spacing:-0.02em;
-}
-.hero-heading em{font-style:italic;color:var(--gold)}
-.hero-sub{font-size:1.15rem;color:var(--text-secondary);max-width:680px;line-height:1.8;margin-bottom:56px;font-weight:300}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:64px}
-.hero-stat{
-  background:var(--surface);border:1px solid var(--surface-border);
-  border-radius:16px;padding:28px 24px;text-align:center;
-  transition:all 0.3s ease;
-}
-.hero-stat:hover{border-color:var(--gold-border);transform:translateY(-2px);box-shadow:0 12px 40px var(--gold-glow)}
-.hero-stat-value{
-  font-family:var(--font-heading);font-size:2.2rem;font-weight:600;
-  color:var(--text);margin-bottom:6px;
-}
-.hero-stat-label{font-size:0.8rem;color:var(--text-muted);font-weight:400}
-.hero-agents{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.hero-agents-label{font-size:0.8rem;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.08em}
-.hero-avatar{
-  width:44px;height:44px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.3s;cursor:default;position:relative;
-  border:2px solid transparent;
-}
-.hero-avatar svg{width:22px;height:22px}
-.hero-avatar:hover{transform:scale(1.15);border-color:rgba(255,255,255,0.1)}
-.hero-avatar.live{border-color:var(--gold);box-shadow:0 0 20px var(--gold-glow)}
-
-/* ========== TEAM SECTION ========== */
-#team{background:var(--bg2)}
-.team-group{margin-bottom:48px}
-.team-group:last-child{margin-bottom:0}
-.team-group-label{
-  font-family:var(--font-mono);font-size:0.7rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
-  margin-bottom:16px;padding-bottom:12px;
-  border-bottom:1px solid var(--gold-border);
+.group-label::before{
+  content:'';display:inline-block;width:8px;height:8px;
+  border-radius:2px;background:var(--gold-dim);border:1px solid var(--gold-border);
 }
 
-/* Agent Card - Collapsed Row */
+/* ========== AGENT GRID ========== */
+.agent-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
 .agent-card{
-  background:var(--surface);border:1px solid var(--surface-border);
-  border-radius:14px;margin-bottom:8px;cursor:pointer;
-  transition:all 0.3s ease;overflow:hidden;
+  background:var(--surface);
+  border:1px solid var(--surface-border);
+  border-radius:14px;
+  padding:22px;
+  cursor:pointer;
+  transition:all 0.25s ease;
+  position:relative;
+  overflow:hidden;
 }
-.agent-card:hover{border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.04)}
-.agent-card.expanded{
+.agent-card:hover{
+  border-color:rgba(255,255,255,0.12);
+  background:var(--surface-hover);
+  transform:translateY(-2px);
+}
+.agent-card.orchestrator{
+  grid-column:1/-1;
+  display:flex;align-items:center;gap:24px;
   border-color:var(--gold-border);
-  box-shadow:0 8px 48px rgba(212,168,83,0.08);
-  background:rgba(255,255,255,0.04);
+  background:linear-gradient(135deg, var(--gold-glow), transparent 60%);
 }
-.agent-row{
-  display:flex;align-items:center;padding:20px 28px;gap:20px;
-}
+.agent-card.orchestrator:hover{border-color:var(--gold)}
+.agent-card.orchestrator .agent-avatar{width:72px;height:72px}
+
+.agent-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .agent-avatar{
-  width:52px;height:52px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;position:relative;
+  width:48px;height:48px;border-radius:12px;
+  object-fit:cover;
+  border:1px solid var(--surface-border);
+  flex-shrink:0;
 }
-.agent-avatar svg{width:26px;height:26px}
+.agent-card.orchestrator .agent-avatar{border-color:var(--gold-border)}
 .agent-info{flex:1;min-width:0}
-.agent-name{font-family:var(--font-heading);font-size:1.3rem;font-weight:600;letter-spacing:-0.01em}
-.agent-role{font-size:0.85rem;color:var(--text-secondary);font-weight:400}
-.agent-quote{
-  font-size:0.85rem;color:var(--text-muted);font-style:italic;
-  flex:1;text-align:right;padding:0 32px;
-  display:none;
-}
+.agent-name{font-size:0.95rem;font-weight:600;color:var(--text);line-height:1.2}
+.agent-role{font-size:0.78rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent-bottom{display:flex;align-items:center;justify-content:space-between}
 .agent-status{
-  font-family:var(--font-mono);font-size:0.65rem;font-weight:600;
-  padding:5px 14px;border-radius:20px;white-space:nowrap;
-  letter-spacing:0.05em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:100px;
+  font-size:0.7rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
 }
-.agent-status.live{background:var(--gold-dim);color:var(--gold)}
-.agent-status.phase-1{background:rgba(59,130,246,0.12);color:#60a5fa}
-.agent-status.phase-2{background:rgba(139,92,246,0.12);color:#a78bfa}
-.agent-status.phase-3{background:rgba(255,255,255,0.05);color:var(--text-muted)}
-.agent-chevron{
-  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-  color:var(--text-muted);transition:transform 0.3s ease;flex-shrink:0;
+.agent-status.live{
+  background:var(--gold-dim);color:var(--gold);
+  border:1px solid var(--gold-border);
 }
-.agent-card.expanded .agent-chevron{transform:rotate(180deg)}
-
-/* Agent Card - Expanded Content */
-.agent-expand{
-  max-height:0;overflow:hidden;
-  transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.agent-card.expanded .agent-expand{max-height:1200px}
-.agent-detail{
-  padding:0 28px 28px;
-  display:grid;grid-template-columns:1fr 320px;gap:40px;
-  border-top:1px solid var(--surface-border);
-  padding-top:24px;margin:0 28px;padding-left:0;padding-right:0;
-}
-.agent-detail-left{}
-.agent-about{font-size:0.92rem;color:var(--text-secondary);line-height:1.75;margin-bottom:24px;font-weight:300}
-.agent-section{margin-bottom:20px}
-.agent-section:last-child{margin-bottom:0}
-.agent-section-title{
-  font-family:var(--font-heading);font-size:1.1rem;font-weight:600;
-  color:var(--text);margin-bottom:10px;
-}
-.agent-section ul{list-style:none;display:flex;flex-direction:column;gap:6px}
-.agent-section li{
-  font-size:0.85rem;color:var(--text-secondary);line-height:1.6;
-  padding-left:20px;position:relative;font-weight:300;
-}
-.agent-section li::before{
-  content:'';position:absolute;left:0;top:9px;
-  width:6px;height:6px;border-radius:50%;
-  background:var(--gold);opacity:0.6;
-}
-
-.agent-detail-right{display:flex;flex-direction:column;gap:24px}
-.agent-meta-block{}
-.agent-meta-title{
-  font-family:var(--font-mono);font-size:0.7rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);
-  margin-bottom:12px;
-}
-.agent-access-list{display:flex;flex-direction:column;gap:8px}
-.agent-access-item{
-  font-size:0.85rem;color:var(--text-secondary);
-  display:flex;align-items:center;gap:10px;
-}
-.agent-access-item span.emoji{font-size:1rem;width:24px;text-align:center;flex-shrink:0}
-.agent-tags{display:flex;flex-wrap:wrap;gap:8px}
-.agent-tag{
-  font-family:var(--font-mono);font-size:0.72rem;font-weight:500;
-  padding:5px 12px;border-radius:6px;
-  background:rgba(255,255,255,0.05);color:var(--text-secondary);
+.agent-status.planned{
+  background:rgba(255,255,255,0.03);color:var(--text-muted);
   border:1px solid var(--surface-border);
 }
-.agent-tag.paired{border-left:3px solid var(--gold)}
-.agent-tag.tool{background:rgba(212,168,83,0.06);border-color:var(--gold-border)}
+.agent-status.building{
+  background:var(--blue-dim);color:var(--blue);
+  border:1px solid var(--blue-border);
+}
+.status-indicator{
+  width:6px;height:6px;border-radius:50%;
+}
+.status-indicator.live{
+  background:var(--gold);
+  box-shadow:0 0 6px rgba(212,168,83,0.6);
+  animation:pulse-gold 2s ease-in-out infinite;
+}
+.status-indicator.planned{background:var(--text-muted)}
+.status-indicator.building{
+  background:var(--blue);
+  box-shadow:0 0 6px rgba(91,155,213,0.5);
+  animation:pulse-blue 2s ease-in-out infinite;
+}
+@keyframes pulse-gold{0%,100%{opacity:1;box-shadow:0 0 6px rgba(212,168,83,0.6)}50%{opacity:0.6;box-shadow:0 0 12px rgba(212,168,83,0.3)}}
+@keyframes pulse-blue{0%,100%{opacity:1}50%{opacity:0.5}}
 
-/* ========== WORKFLOWS ========== */
-#workflows{background:var(--bg)}
-.workflows-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
-.workflow-card{
-  background:var(--surface);border:1px solid var(--surface-border);
-  border-radius:16px;padding:32px;transition:all 0.3s;
+.agent-active{font-size:0.7rem;color:var(--text-muted);font-style:italic}
+
+/* ========== ORCHESTRATOR CARD SPECIFICS ========== */
+.agent-card.orchestrator .agent-top{margin-bottom:0}
+.agent-card.orchestrator .agent-name{font-size:1.15rem}
+.agent-card.orchestrator .agent-role{font-size:0.85rem}
+.orch-meta{
+  margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px;
 }
-.workflow-card:hover{border-color:rgba(255,255,255,0.1)}
-.wf-type{
-  font-family:var(--font-mono);font-size:0.65rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
-  margin-bottom:16px;
+
+/* ========== SIDEBAR ========== */
+.sidebar-title{
+  font-family:var(--font-heading);font-size:1.3rem;font-weight:600;
+  margin-bottom:6px;color:var(--text);
 }
-.wf-title{font-family:var(--font-heading);font-size:1.4rem;font-weight:600;margin-bottom:6px}
-.wf-time{font-size:0.8rem;color:var(--text-muted);margin-bottom:28px;font-weight:400}
-.wf-steps{display:flex;flex-direction:column;gap:0}
-.wf-step{display:flex;gap:16px;position:relative;padding-bottom:24px}
-.wf-step:last-child{padding-bottom:0}
-.wf-step-line{
-  position:absolute;left:18px;top:40px;bottom:0;width:1px;
-  background:rgba(255,255,255,0.06);
+.sidebar-subtitle{
+  font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:0.08em;font-weight:600;margin-bottom:24px;
 }
-.wf-step:last-child .wf-step-line{display:none}
-.wf-step-num{
-  width:36px;height:36px;border-radius:50%;
+.feed-item{
+  display:flex;gap:12px;padding:14px 0;
+  border-bottom:1px solid var(--surface-border);
+  animation:fadeIn 0.4s ease;
+}
+.feed-item:last-child{border-bottom:none}
+.feed-avatar{
+  width:32px;height:32px;border-radius:8px;
+  object-fit:cover;flex-shrink:0;
+  border:1px solid var(--surface-border);
+}
+.feed-avatar.system{
+  background:var(--surface);
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-mono);font-size:0.65rem;font-weight:700;
-  color:#fff;flex-shrink:0;position:relative;z-index:1;
+  font-size:0.75rem;color:var(--text-muted);
 }
-.wf-step-content{padding-top:6px;flex:1}
-.wf-step-agent{font-size:0.88rem;font-weight:600;margin-bottom:2px}
-.wf-step-desc{font-size:0.8rem;color:var(--text-muted);line-height:1.5;font-weight:300}
+.feed-body{flex:1;min-width:0}
+.feed-agent{font-size:0.8rem;font-weight:600;color:var(--text)}
+.feed-action{font-size:0.8rem;color:var(--text-secondary);margin-top:1px}
+.feed-time{
+  font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);
+  margin-top:4px;letter-spacing:0.02em;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ========== ROADMAP ========== */
-#roadmap{background:var(--bg2)}
-.roadmap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:56px}
-.sprint-card{
-  background:var(--surface);border:1px solid var(--surface-border);
-  border-radius:16px;padding:36px;position:relative;overflow:hidden;
-  transition:all 0.3s;
+/* ========== MODAL ========== */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+  z-index:2000;display:none;align-items:center;justify-content:center;
+  padding:24px;
 }
-.sprint-card:hover{border-color:rgba(255,255,255,0.1)}
-.sprint-number{
-  font-family:var(--font-heading);font-size:4rem;font-weight:700;
-  color:rgba(255,255,255,0.04);position:absolute;top:-8px;right:24px;
-  line-height:1;
+.modal-overlay.open{display:flex}
+.modal{
+  background:#111;border:1px solid var(--surface-border);
+  border-radius:20px;max-width:520px;width:100%;
+  padding:36px;position:relative;
+  animation:modalIn 0.3s ease;
 }
-.sprint-label{
-  font-family:var(--font-mono);font-size:0.65rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);
-  margin-bottom:10px;
+@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:none;border:none;color:var(--text-muted);
+  font-size:1.3rem;cursor:pointer;padding:4px 8px;
+  transition:color 0.2s;
 }
-.sprint-title{font-family:var(--font-heading);font-size:1.3rem;font-weight:600;margin-bottom:16px}
-.sprint-agents{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
-.sprint-agent-tag{
-  font-family:var(--font-mono);font-size:0.7rem;font-weight:500;
-  padding:4px 12px;border-radius:6px;
-  background:rgba(255,255,255,0.03);
-  border-left:3px solid;
+.modal-close:hover{color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:18px;margin-bottom:24px}
+.modal-avatar{width:64px;height:64px;border-radius:14px;object-fit:cover;border:1px solid var(--surface-border)}
+.modal-name{font-family:var(--font-heading);font-size:1.5rem;font-weight:600}
+.modal-role{font-size:0.85rem;color:var(--text-muted);margin-top:2px}
+.modal-section{margin-bottom:20px}
+.modal-section:last-child{margin-bottom:0}
+.modal-section-title{
+  font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:0.1em;font-weight:600;margin-bottom:8px;
 }
-.sprint-tasks{display:flex;flex-direction:column;gap:8px}
-.sprint-task{
-  font-size:0.84rem;color:var(--text-secondary);line-height:1.55;
-  display:flex;gap:12px;font-weight:300;
+.modal-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:100px;font-size:0.75rem;font-weight:600;
 }
-.sprint-task::before{
-  content:'\2192';color:var(--gold);font-weight:600;flex-shrink:0;
-  font-size:0.9rem;
+.modal-badge.live{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border)}
+.modal-badge.planned{background:rgba(255,255,255,0.03);color:var(--text-muted);border:1px solid var(--surface-border)}
+.modal-badge.building{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue-border)}
+.modal-mirror{font-size:0.88rem;color:var(--text-secondary)}
+.modal-mirror span{color:var(--gold)}
+.modal-caps{list-style:none;padding:0}
+.modal-caps li{
+  font-size:0.84rem;color:var(--text-secondary);
+  padding:6px 0;border-bottom:1px solid var(--surface-border);
+  display:flex;align-items:center;gap:8px;
 }
+.modal-caps li:last-child{border-bottom:none}
+.modal-caps li::before{content:'→';color:var(--gold);font-size:0.75rem}
 
 /* ========== FOOTER ========== */
-footer{border-top:1px solid var(--surface-border);padding:48px 40px;text-align:center}
-.footer-logo{
-  font-family:var(--font-heading);font-size:1.3rem;font-weight:600;
-  margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:10px;
+.dash-footer{
+  grid-column:1/-1;
+  border-top:1px solid var(--surface-border);
+  padding:24px 40px;
+  text-align:center;
+  font-size:0.78rem;color:var(--text-muted);
 }
-.footer-logo svg{width:22px;height:22px}
-.footer-sub{font-size:0.8rem;color:var(--text-muted);font-weight:400}
+.dash-footer a{color:var(--gold);text-decoration:none;transition:color 0.2s}
+.dash-footer a:hover{color:var(--gold-light)}
 
-/* ========== ANIMATIONS ========== */
-.fade-up{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease}
+/* ========== FADE-UP ANIMATION ========== */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
 .fade-up.visible{opacity:1;transform:translateY(0)}
-.fade-up-delay-1{transition-delay:0.1s}
-.fade-up-delay-2{transition-delay:0.2s}
-.fade-up-delay-3{transition-delay:0.3s}
 
 /* ========== RESPONSIVE ========== */
-@media(min-width:1000px){
-  .agent-quote{display:block}
+@media(max-width:1100px){
+  .dashboard{grid-template-columns:1fr}
+  .sidebar{
+    position:static;max-height:none;
+    border-left:none;border-top:1px solid var(--surface-border);
+    padding:32px 40px;
+  }
 }
-@media(max-width:1000px){
-  .hero-stats{grid-template-columns:repeat(2,1fr)}
-  .workflows-grid{grid-template-columns:1fr}
-  .roadmap-grid{grid-template-columns:1fr}
-  .agent-detail{grid-template-columns:1fr;gap:24px}
-  section{padding:100px 24px 80px}
-  .nav-inner{padding:0 24px}
-  .team-subnav-inner{padding:0 24px}
+@media(max-width:900px){
+  .agent-grid{grid-template-columns:repeat(2,1fr)}
+  .metrics-row{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:700px){
-  .nav-tabs{display:none;position:absolute;top:72px;left:0;right:0;background:rgba(10,10,10,0.95);flex-direction:column;padding:16px;border-bottom:1px solid var(--surface-border);border-radius:0}
-  .nav-tabs.open{display:flex}
-  .mobile-menu{display:block}
-  .hero-stats{grid-template-columns:1fr 1fr}
-  .hero-agents{gap:10px}
-  .hero-avatar{width:38px;height:38px}
-  .hero-avatar svg{width:18px;height:18px}
-  section{padding:80px 16px 60px}
-  .nav-inner{padding:0 16px}
-  .agent-row{padding:16px 20px;gap:14px}
-  .agent-detail{padding:0 20px 20px;margin:0 20px}
-  .agent-avatar{width:44px;height:44px}
-  .agent-avatar svg{width:22px;height:22px}
-  .team-subnav-inner{padding:0 16px;gap:12px;overflow-x:auto}
+@media(max-width:640px){
+  .topbar{padding:0 16px;height:56px}
+  .topbar-label,.topbar-divider{display:none}
+  .topbar-clock{font-size:0.72rem}
+  .main-content{padding:24px 16px 40px}
+  .sidebar{padding:24px 16px}
+  .agent-grid{grid-template-columns:1fr}
+  .agent-card.orchestrator{flex-direction:column;align-items:flex-start}
+  .orch-meta{margin-left:0;align-items:flex-start;flex-direction:row;gap:12px}
+  .metrics-row{grid-template-columns:1fr 1fr}
+  .dash-title{font-size:1.8rem}
+  .modal{padding:24px}
+  .dash-footer{padding:20px 16px}
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <div class="nav-brand">
-      <div class="nav-logo">
-        <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="6" fill="#D4A853"/><g stroke="#D4A853" stroke-width="2" stroke-linecap="round"><line x1="14" y1="1" x2="14" y2="5"/><line x1="14" y1="23" x2="14" y2="27"/><line x1="1" y1="14" x2="5" y2="14"/><line x1="23" y1="14" x2="27" y2="14"/><line x1="4.8" y1="4.8" x2="7.6" y2="7.6"/><line x1="20.4" y1="20.4" x2="23.2" y2="23.2"/><line x1="4.8" y1="23.2" x2="7.6" y2="20.4"/><line x1="20.4" y1="7.6" x2="23.2" y2="4.8"/></g></svg>
-        Apollo
-      </div>
-      <div class="nav-divider"></div>
-      <div class="nav-subtitle">AI Workforce Blueprint</div>
+<!-- ========== TOP BAR ========== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="8" fill="#D4A853"/>
+        <circle cx="20" cy="20" r="13" stroke="#D4A853" stroke-width="1" opacity="0.3"/>
+        <circle cx="20" cy="20" r="18" stroke="#D4A853" stroke-width="0.5" opacity="0.15"/>
+        <line x1="20" y1="2" x2="20" y2="8" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+        <line x1="20" y1="32" x2="20" y2="38" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+        <line x1="2" y1="20" x2="8" y2="20" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+        <line x1="32" y1="20" x2="38" y2="20" stroke="#D4A853" stroke-width="1" opacity="0.5"/>
+      </svg>
+      Apollo
     </div>
-    <div class="nav-tabs" id="navTabs">
-      <a href="#hero" class="nav-tab active" data-section="hero">Overview</a>
-      <a href="#architecture" class="nav-tab" data-section="architecture">Architecture</a>
-      <a href="#team" class="nav-tab" data-section="team">The Team</a>
-      <a href="#workflows" class="nav-tab" data-section="workflows">How It Works</a>
-      <a href="#roadmap" class="nav-tab" data-section="roadmap">Roadmap</a>
-    </div>
-    <button class="mobile-menu" id="menuBtn" aria-label="Menu">&#9776;</button>
+    <div class="topbar-divider"></div>
+    <span class="topbar-label">Command Centre</span>
   </div>
-</nav>
+  <div class="topbar-center">
+    <div class="topbar-clock" id="liveClock">—</div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-pill">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">OPERATIONAL</span>
+    </div>
+  </div>
+</header>
 
-<!-- TEAM SUB-NAV -->
-<div class="team-subnav" id="teamSubnav">
-  <div class="team-subnav-inner">
-    <span class="team-subnav-label">Filter</span>
-    <button class="team-filter active" data-filter="all">All Agents</button>
-    <button class="team-filter" data-filter="orchestrator">Orchestrator</button>
-    <button class="team-filter" data-filter="operations">Operations</button>
-    <button class="team-filter" data-filter="growth">Growth</button>
+<!-- ========== DASHBOARD ========== -->
+<div class="dashboard">
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- HEADER -->
+    <div class="dash-header fade-up">
+      <h1 class="dash-title">Apollo Command Centre</h1>
+      <p class="dash-subtitle">Comfort (COMFRT) · AI Workforce Operations</p>
+
+      <div class="metrics-row" id="metricsRow">
+        <div class="metric-card">
+          <div class="metric-label">Agents Online</div>
+          <div class="metric-value">1 <span style="font-size:1rem;color:var(--text-muted)">/ 15</span></div>
+          <div class="metric-sub">Apollo</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">System Uptime</div>
+          <div class="metric-value">99.9%</div>
+          <div class="metric-sub">Last 30 days</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Tasks Today</div>
+          <div class="metric-value">—</div>
+          <div class="metric-sub">Awaiting integration</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Last Sync</div>
+          <div class="metric-value" id="lastSyncValue" style="font-size:1.4rem">—</div>
+          <div class="metric-sub" id="lastSyncSub">Updating…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORCHESTRATOR -->
+    <div class="section-group fade-up">
+      <div class="group-label">Orchestrator</div>
+      <div class="agent-grid" id="orchestratorGrid"></div>
+    </div>
+
+    <!-- OPERATIONS -->
+    <div class="section-group fade-up">
+      <div class="group-label">Operations</div>
+      <div class="agent-grid" id="operationsGrid"></div>
+    </div>
+
+    <!-- GROWTH -->
+    <div class="section-group fade-up">
+      <div class="group-label">Growth</div>
+      <div class="agent-grid" id="growthGrid"></div>
+    </div>
+
+  </main>
+
+  <!-- SIDEBAR — ACTIVITY FEED -->
+  <aside class="sidebar">
+    <h2 class="sidebar-title">Activity Feed</h2>
+    <p class="sidebar-subtitle">Recent agent activity</p>
+    <div id="activityFeed"></div>
+  </aside>
+
+  <!-- FOOTER -->
+  <footer class="dash-footer">
+    Apollo AI · Comfort (COMFRT) · Command Centre · 2026 · <a href="https://comfrt.com" target="_blank" rel="noopener">comfrt.com</a>
+  </footer>
+</div>
+
+<!-- ========== MODAL ========== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="agentModal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-header">
+      <img class="modal-avatar" id="modalAvatar" src="" alt="">
+      <div>
+        <div class="modal-name" id="modalName"></div>
+        <div class="modal-role" id="modalRole"></div>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Status</div>
+      <div id="modalStatus"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Integration</div>
+      <div id="modalIntegration" style="font-size:0.88rem;color:var(--text-secondary)"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Mirrors</div>
+      <div class="modal-mirror" id="modalMirror"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Planned Capabilities</div>
+      <ul class="modal-caps" id="modalCaps"></ul>
+    </div>
   </div>
 </div>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="container hero-content">
-    <div class="hero-eyebrow">Hudson AI AI Workforce</div>
-    <h1 class="hero-heading">Your AI Command<br><em>Centre.</em></h1>
-    <p class="hero-sub">You're the founder of the fastest-growing apparel brand in America &mdash; $700M and climbing. Apollo is your AI twin. Fourteen agents. One empire. One vision.</p>
-    <div class="hero-stats">
-      <div class="hero-stat fade-up">
-        <div class="hero-stat-value">1</div>
-        <div class="hero-stat-label">Live Now &mdash; Apollo</div>
-      </div>
-      <div class="hero-stat fade-up fade-up-delay-1">
-        <div class="hero-stat-value">15</div>
-        <div class="hero-stat-label">Total Agents</div>
-      </div>
-      <div class="hero-stat fade-up fade-up-delay-2">
-        <div class="hero-stat-value">$1B</div>
-        <div class="hero-stat-label">Revenue Target &mdash; 2027</div>
-      </div>
-      <div class="hero-stat fade-up fade-up-delay-3">
-        <div class="hero-stat-value">1M+</div>
-        <div class="hero-stat-label">Community Goal</div>
-      </div>
-    </div>
-    <div class="hero-agents">
-      <span class="hero-agents-label">The Team</span>
-      <!-- Apollo -->
-      <div class="hero-avatar live" style="background:#D4A853" title="Apollo"><img src="https://i.pravatar.cc/150?img=68" alt="Hudson AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Fin -->
-      <div class="hero-avatar" style="background:#4A9EFF" title="Cherrie AI"><img src="avatars/cherrie.jpg" alt="Cherrie AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Chain -->
-      <div class="hero-avatar" style="background:#FF6B6B" title="Jian AI"><img src="avatars/jian.jpg" alt="Jian AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Globe -->
-      <div class="hero-avatar" style="background:#4ECDC4" title="Alex AI"><img src="avatars/alex.jpg" alt="Alex AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Vault -->
-      <div class="hero-avatar" style="background:#FF8C42" title="Vault"><img src="https://i.pravatar.cc/150?img=44" alt="Vault" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Scout -->
-      <div class="hero-avatar" style="background:#A78BFA" title="Scout"><img src="https://i.pravatar.cc/150?img=24" alt="Scout" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Sage -->
-      <div class="hero-avatar" style="background:#34D399" title="Sage"><img src="https://i.pravatar.cc/150?img=25" alt="Sage" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Maya -->
-      <div class="hero-avatar" style="background:#F472B6" title="Gillian AI"><img src="avatars/gillian.jpg" alt="Gillian AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Kira -->
-      <div class="hero-avatar" style="background:#FB923C" title="Kimberly AI"><img src="https://i.pravatar.cc/150?img=23" alt="Kimberly AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Pixel -->
-      <div class="hero-avatar" style="background:#818CF8" title="Danielle AI"><img src="https://i.pravatar.cc/150?img=38" alt="Danielle AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Pulse -->
-      <div class="hero-avatar" style="background:#F87171" title="Lynn AI"><img src="https://i.pravatar.cc/150?img=53" alt="Lynn AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Cleo -->
-      <div class="hero-avatar" style="background:#38BDF8" title="Courtney AI"><img src="https://i.pravatar.cc/150?img=9" alt="Courtney AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Forge -->
-      <div class="hero-avatar" style="background:#FBBF24" title="Mae AI"><img src="https://i.pravatar.cc/150?img=59" alt="Mae AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-      <!-- Nexus -->
-      <div class="hero-avatar" style="background:#A3E635" title="Camillia AI"><img src="https://i.pravatar.cc/150?img=51" alt="Camillia AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ========== ARCHITECTURE ========== -->
-<section id="architecture" style="padding:80px 40px 80px">
-  <div class="container">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
-      <!-- Left: Text -->
-      <div>
-        <div class="section-label" style="margin-bottom:20px">The Architecture</div>
-        <h2 style="font-family:var(--font-heading);font-size:clamp(2.6rem,5vw,4rem);font-weight:400;line-height:1.12;margin-bottom:48px;letter-spacing:-0.02em">
-          One brand.<br>Fourteen agents.<br><em style="font-style:italic;color:var(--gold)">One twin.</em>
-        </h2>
-        <p style="font-size:1.05rem;color:var(--text-secondary);line-height:1.7;font-weight:300;max-width:560px;margin-bottom:24px">
-          Comfort is one brand &mdash; the #1 hoodie in America, with a creator-powered growth engine unlike anything in DTC. Apollo sits at the apex: the only agent with full visibility across every department.
-        </p>
-        <p style="font-size:1.05rem;color:var(--text-secondary);line-height:1.7;font-weight:300;max-width:560px">
-          The <strong style="color:var(--text);font-weight:500">Operations Stack</strong> handles what scale demands: finance, supply chain, inventory, and international expansion. The <strong style="color:var(--text);font-weight:500">Growth Stack</strong> runs the engine: revenue, influencer, creative, performance marketing, customer intelligence, and product development.
-        </p>
-      </div>
-      <!-- Right: Org Chart -->
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:28px 24px">
-        <!-- Apollo at top -->
-        <div style="text-align:center;margin-bottom:16px">
-          <img src="https://i.pravatar.cc/150?img=68" alt="Hudson AI" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #D4A853;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto">
-          <div style="font-family:var(--font-body);font-weight:600;font-size:1rem;color:var(--text)">Hudson AI</div>
-          <div style="font-family:var(--font-heading);font-style:italic;font-size:0.85rem;color:var(--gold)">Master Orchestrator</div>
-        </div>
-        <!-- Connector line -->
-        <div style="width:1px;height:24px;background:rgba(255,255,255,0.15);margin:0 auto 12px"></div>
-        <!-- Two columns -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <!-- Operations Stack -->
-          <div>
-            <div style="font-family:var(--font-mono);font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:10px">Operations Stack</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <!-- Fin -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="avatars/cherrie.jpg" alt="Cherrie AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #4A9EFF">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Cherrie AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Finance</div></div>
-              </div>
-              <!-- Chain -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="avatars/jian.jpg" alt="Jian AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #FF6B6B">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Jian AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Supply Chain</div></div>
-              </div>
-              <!-- Globe -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="avatars/alex.jpg" alt="Alex AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #4ECDC4">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Alex AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">International</div></div>
-              </div>
-              <!-- Vault -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=44" alt="Vault" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #FF8C42">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Vault</div><div style="font-size:0.75rem;color:var(--text-secondary)">Retail</div></div>
-              </div>
-              <!-- Scout -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=24" alt="Scout" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #A78BFA">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Scout</div><div style="font-size:0.75rem;color:var(--text-secondary)">Intelligence</div></div>
-              </div>
-              <!-- Sage -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=25" alt="Sage" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #34D399">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Sage</div><div style="font-size:0.75rem;color:var(--text-secondary)">Strategy</div></div>
-              </div>
-              <!-- Edwin AI -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="avatars/edwin.jpg" alt="Edwin AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #06B6D4">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Edwin AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Technology</div></div>
-              </div>
-            </div>
-          </div>
-          <!-- Growth Stack -->
-          <div>
-            <div style="font-family:var(--font-mono);font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:10px">Growth Stack</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <!-- Maya -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="avatars/gillian.jpg" alt="Gillian AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #F472B6">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Gillian AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Revenue</div></div>
-              </div>
-              <!-- Kira -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=23" alt="Kimberly AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #FB923C">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Kimberly AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Influencer</div></div>
-              </div>
-              <!-- Pixel -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=38" alt="Danielle AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #818CF8">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Danielle AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Creative</div></div>
-              </div>
-              <!-- Pulse -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=53" alt="Lynn AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #F87171">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Lynn AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Performance</div></div>
-              </div>
-              <!-- Cleo -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=9" alt="Courtney AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #38BDF8">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Courtney AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Customer</div></div>
-              </div>
-              <!-- Forge -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=59" alt="Mae AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #FBBF24">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Mae AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Product</div></div>
-              </div>
-              <!-- Nexus -->
-              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px">
-                <img src="https://i.pravatar.cc/150?img=51" alt="Camillia AI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #A3E635">
-                <div><div style="font-weight:600;font-size:0.85rem;color:var(--text)">Camillia AI</div><div style="font-size:0.75rem;color:var(--text-secondary)">Community</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- THE TEAM -->
-<section id="team">
-  <div class="container">
-    <div class="section-label">The Team</div>
-    <h2 class="section-title fade-up">Meet your <em>fifteen agents.</em></h2>
-    <p class="section-desc fade-up" style="margin-bottom:48px">Click any agent to see their full profile, capabilities, and integrations.</p>
-
-    <!-- MASTER ORCHESTRATOR -->
-    <div class="team-group" data-group="orchestrator">
-      <div class="team-group-label">Master Orchestrator</div>
-
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#D4A853"><img src="https://i.pravatar.cc/150?img=68" alt="Hudson AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Hudson AI</div>
-            <div class="agent-role">Master Orchestrator</div>
-          </div>
-          <div class="agent-quote">"The one who sees the whole board."</div>
-          <span class="agent-status live">Live</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Hudson AI is the AI digital twin of Hudson Leogrande &mdash; founder of Comfort (COMFRT), the fastest-growing apparel brand in America. He sits at the apex of the entire operation: the only agent with full visibility across every department. He synthesizes signals from finance, operations, influencer, and growth into a single daily intelligence brief. He doesn't just execute &mdash; he decides what matters.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Intelligence</div>
-                <ul>
-                  <li>Morning brief: Shopify revenue + Meta spend + top 3 issues</li>
-                  <li>Telegram message triage &mdash; flags what needs Hudson, archives the rest</li>
-                  <li>Calendar management &mdash; meetings, launches, creator calls</li>
-                  <li>Cross-function anomaly detection &mdash; spots when something is off</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">CEO Decision Support</div>
-                <ul>
-                  <li>Synthesizes inputs from all 14 agents into one weekly CEO brief</li>
-                  <li>Flags decisions that require Hudson's attention vs. can be delegated</li>
-                  <li>Tracks OKRs across all departments in real time</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Primary orchestrator &mdash; receives daily digests from all agents and compiles the CEO morning brief.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Telegram (Full Access)</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4DD;</span> Notion (Read/Write)</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4E7;</span> Email</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4C5;</span> Calendar</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F310;</span> All Workspaces</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">All 14 agents</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">OpenClaw</span>
-                  <span class="agent-tag tool">Notion API</span>
-                  <span class="agent-tag tool">Telegram API</span>
-                  <span class="agent-tag tool">Shopify API</span>
-                  <span class="agent-tag tool">Composio</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- OPERATIONS STACK -->
-    <div class="team-group" data-group="operations">
-      <div class="team-group-label">Operations Stack</div>
-
-      <!-- Fin -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#4A9EFF"><img src="avatars/cherrie.jpg" alt="Cherrie AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Cherrie AI</div>
-            <div class="agent-role">Finance &amp; P&amp;L Intelligence</div>
-          </div>
-          <div class="agent-quote">"She lives in the numbers so you don't have to."</div>
-          <span class="agent-status phase-1">Phase 1</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Cherrie AI is the financial nerve center of Comfort. She monitors every dollar flowing through the business &mdash; from $500K/day ad spend to manufacturing payments to revenue recognition. She doesn't wait for month-end to tell you something's wrong. She knows in real time.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Operations</div>
-                <ul>
-                  <li>Overnight P&amp;L signals, margin alerts, cash position</li>
-                  <li>Ad spend vs revenue tracking across Meta, TikTok, Google</li>
-                  <li>Manufacturing payment schedules and net-90 term tracking</li>
-                  <li>Revenue forecasting against $1B target</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect Shopify, banking APIs &mdash; daily P&amp;L and cash position brief live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4B0;</span> Shopify Revenue</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Banking APIs</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Northbeam</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F9EE;</span> P&amp;L Dashboard</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Gillian AI</span>
-                  <span class="agent-tag paired">Jian AI</span>
-                  <span class="agent-tag paired">Sage</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Shopify API</span>
-                  <span class="agent-tag tool">Banking API</span>
-                  <span class="agent-tag tool">Northbeam API</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Chain -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#FF6B6B"><img src="avatars/jian.jpg" alt="Jian AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Jian AI</div>
-            <div class="agent-role">Supply Chain &amp; Inventory</div>
-          </div>
-          <div class="agent-quote">"He knows where every hoodie is before you ask."</div>
-          <span class="agent-status phase-1">Phase 1</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Jian AI is the logistics brain of Comfort. He tracks every hoodie from manufacturer to customer &mdash; across China, Cambodia, and Vietnam. He knows when to reorder, when to shift production, and when a shipment is going to be late before the 3PL tells you.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Operations</div>
-                <ul>
-                  <li>Inventory levels by SKU, color, and size across all warehouses</li>
-                  <li>Stockout predictions and automatic reorder alerts</li>
-                  <li>3PL performance monitoring and shipping SLA tracking</li>
-                  <li>Manufacturing timeline tracking with net-90 payment terms</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect Shopify inventory, 3PL API &mdash; stockout alerts and supplier tracking live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4E6;</span> Shopify Inventory</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F69A;</span> 3PL API</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F3ED;</span> Manufacturing Dashboard</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Demand Forecasting</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Cherrie AI</span>
-                  <span class="agent-tag paired">Mae AI</span>
-                  <span class="agent-tag paired">Alex AI</span>
-                  <span class="agent-tag paired">Vault</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Shopify API</span>
-                  <span class="agent-tag tool">3PL API</span>
-                  <span class="agent-tag tool">Demand Planning Tools</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Globe -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#4ECDC4"><img src="avatars/alex.jpg" alt="Alex AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Alex AI</div>
-            <div class="agent-role">International Expansion</div>
-          </div>
-          <div class="agent-quote">"He opens new markets while you sleep."</div>
-          <span class="agent-status phase-2">Phase 2</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Alex AI is the advance team for Comfort's global takeover. He's building the playbook to duplicate the US creator-powered growth engine in UK, Australia, Canada, and Europe. Every new market gets the same proven formula &mdash; local creators, local fulfillment, local media buying.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Focus Areas</div>
-                <ul>
-                  <li>UK launch planning: creator recruitment, 3PL setup, Meta/TikTok localization</li>
-                  <li>Australia TikTok Shop first-mover strategy</li>
-                  <li>Canada cross-border infrastructure</li>
-                  <li>EU market analysis: Germany, Netherlands, Nordics</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>International expansion tracker &mdash; UK, AU, CA, EU market entry playbooks.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F30D;</span> Market Research</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> International Analytics</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F91D;</span> Local Partner Database</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Jian AI</span>
-                  <span class="agent-tag paired">Kimberly AI</span>
-                  <span class="agent-tag paired">Lynn AI</span>
-                  <span class="agent-tag paired">Sage</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Market Research APIs</span>
-                  <span class="agent-tag tool">Logistics Planning Tools</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vault -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#FF8C42"><img src="https://i.pravatar.cc/150?img=44" alt="Vault" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Vault</div>
-            <div class="agent-role">Retail Operations</div>
-          </div>
-          <div class="agent-quote">"She builds stores that print money."</div>
-          <span class="agent-status phase-2">Phase 2</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Vault is building Comfort's physical presence. Two flagship stores launching Q4 2026 &mdash; Mall of America and American Dream Mall &mdash; with a goal of 1 new store per month in 2027. She manages everything from lease negotiation to store buildout to hiring in-store teams.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Focus Areas</div>
-                <ul>
-                  <li>Mall of America (MN) and American Dream Mall (NJ) buildout tracking</li>
-                  <li>Store design standardization for rapid rollout</li>
-                  <li>In-store team hiring pipeline (8-10 people per location)</li>
-                  <li>Retail POS and inventory integration with Shopify</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Retail buildout tracker &mdash; Mall of America + American Dream Mall progress.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F3EC;</span> Retail Dashboard</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CB;</span> Construction PM Tools</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F465;</span> Hiring Pipeline</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Jian AI</span>
-                  <span class="agent-tag paired">Cherrie AI</span>
-                  <span class="agent-tag paired">Sage</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Project Management</span>
-                  <span class="agent-tag tool">Shopify POS</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scout -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#A78BFA"><img src="https://i.pravatar.cc/150?img=24" alt="Scout" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Scout</div>
-            <div class="agent-role">Intelligence &amp; Research</div>
-          </div>
-          <div class="agent-quote">"She finds what you didn't know to look for."</div>
-          <span class="agent-status phase-3">Phase 3</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Scout is the eyes and ears of the operation. She monitors competitors, tracks market trends, and finds opportunities before anyone else sees them. She scans everything &mdash; social media, industry reports, patent filings, job postings &mdash; to keep Comfort ahead.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Focus Areas</div>
-                <ul>
-                  <li>Competitive intelligence on DTC apparel brands</li>
-                  <li>Market trend analysis and emerging category opportunities</li>
-                  <li>Content trend monitoring across TikTok, Instagram, YouTube</li>
-                  <li>Partnership and M&amp;A opportunity identification</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Competitive intelligence, market trends, deal pipeline live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F50D;</span> Web Research</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Industry Reports</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F3F7;&#xFE0F;</span> Competitor Tracking</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Sage</span>
-                  <span class="agent-tag paired">Brand</span>
-                  <span class="agent-tag paired">Danielle AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Web Scraping</span>
-                  <span class="agent-tag tool">Social Listening</span>
-                  <span class="agent-tag tool">Market Research APIs</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sage -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#34D399"><img src="https://i.pravatar.cc/150?img=25" alt="Sage" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Sage</div>
-            <div class="agent-role">Strategy &amp; OKRs</div>
-          </div>
-          <div class="agent-quote">"She sees around corners."</div>
-          <span class="agent-status phase-3">Phase 3</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Sage is the strategic brain. She maintains the company's North Star metrics, tracks OKRs across every department, and ensures every team is rowing in the same direction toward $1B. She sees around corners &mdash; connecting dots between departments that nobody else notices.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Focus Areas</div>
-                <ul>
-                  <li>Company-wide OKR tracking and alignment</li>
-                  <li>Weekly strategy digest and quarterly planning</li>
-                  <li>Department performance benchmarking</li>
-                  <li>Long-term growth modeling and scenario planning</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>OKR framework, weekly strategy digest, board narrative prep.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> OKR Dashboard</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Analytics</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CB;</span> Strategic Planning</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Cherrie AI</span>
-                  <span class="agent-tag paired">Scout</span>
-                  <span class="agent-tag paired">Alex AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Notion API</span>
-                  <span class="agent-tag tool">Analytics Tools</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-      <!-- Edwin AI -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#06B6D4"><img src="avatars/edwin.jpg" alt="Edwin AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Edwin AI</div>
-            <div class="agent-role">Technology &amp; Engineering</div>
-          </div>
-          <div class="agent-quote">"He builds the infrastructure that makes everything else possible."</div>
-          <span class="agent-status phase-1">Phase 1</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Edwin AI is the technology backbone of Comfort. He manages the tech stack, oversees engineering decisions, integrates tools and platforms, and ensures data flows smoothly between all systems. From Shopify to Northbeam to internal tools &mdash; Edwin keeps the digital infrastructure running at scale.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Responsibilities</div>
-                <ul>
-                  <li>Tech stack management &mdash; Shopify, Northbeam, analytics tools</li>
-                  <li>System integration and API connectivity across platforms</li>
-                  <li>Data pipeline architecture and automation</li>
-                  <li>AI agent infrastructure &mdash; OpenClaw deployment and orchestration</li>
-                  <li>Security, uptime, and performance monitoring</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Core infrastructure agent &mdash; connects all systems and maintains the technical backbone.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-access-title">Base Access</div>
-              <div class="agent-access-list">
-                <div class="agent-access-item"><span class="emoji">&#x1F4BB;</span> Shopify Admin</div>
-                <div class="agent-access-item"><span class="emoji">&#x2699;</span> System APIs</div>
-                <div class="agent-access-item"><span class="emoji">&#x1F50C;</span> Integration Layer</div>
-                <div class="agent-access-item"><span class="emoji">&#x1F6E1;</span> Security Tools</div>
-                <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Data Pipelines</div>
-              </div>
-              <div class="agent-paired-title">Paired With</div>
-              <div class="agent-paired-list">
-                <span class="agent-tag paired">Hudson AI</span>
-                <span class="agent-tag paired">Cherrie AI</span>
-                <span class="agent-tag paired">Gillian AI</span>
-                <span class="agent-tag paired">Lynn AI</span>
-              </div>
-              <div class="agent-tools-title">Tools &amp; Integrations</div>
-              <div class="agent-tools-list">
-                <span class="agent-tag tool">Shopify API</span>
-                <span class="agent-tag tool">OpenClaw</span>
-                <span class="agent-tag tool">Northbeam API</span>
-                <span class="agent-tag tool">Cloud Infrastructure</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- GROWTH STACK -->
-    <div class="team-group" data-group="growth">
-      <div class="team-group-label">Growth Stack</div>
-
-      <!-- Maya -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#F472B6"><img src="avatars/gillian.jpg" alt="Gillian AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Gillian AI</div>
-            <div class="agent-role">Revenue &amp; Performance</div>
-          </div>
-          <div class="agent-quote">"She lives in every dollar."</div>
-          <span class="agent-status phase-1">Phase 1</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Gillian AI lives in every dollar. She monitors Shopify revenue in real time, tracks Meta and TikTok ROAS, watches Northbeam attribution, and knows exactly which channels are printing money and which are bleeding. At $500K/day in ad spend, every percentage point matters.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Operations</div>
-                <ul>
-                  <li>Real-time Shopify revenue monitoring</li>
-                  <li>Meta Ads ROAS and spend tracking ($500K+/day)</li>
-                  <li>TikTok Ads performance and TikTok Shop revenue</li>
-                  <li>Northbeam attribution analysis (the "Lamborghini of tracking")</li>
-                  <li>Channel-level profitability analysis</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect Shopify, Meta Ads, TikTok, Northbeam &mdash; daily revenue brief live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F6D2;</span> Shopify</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Meta Ads</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F3B5;</span> TikTok Ads</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Northbeam</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4E7;</span> Klaviyo</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Cherrie AI</span>
-                  <span class="agent-tag paired">Lynn AI</span>
-                  <span class="agent-tag paired">Danielle AI</span>
-                  <span class="agent-tag paired">Kimberly AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Shopify API</span>
-                  <span class="agent-tag tool">Meta Marketing API</span>
-                  <span class="agent-tag tool">TikTok API</span>
-                  <span class="agent-tag tool">Northbeam API</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Kira -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#FB923C"><img src="https://i.pravatar.cc/150?img=23" alt="Kimberly AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Kimberly AI</div>
-            <div class="agent-role">Influencer &amp; Creator Ops</div>
-          </div>
-          <div class="agent-quote">"She builds the army that builds the brand."</div>
-          <span class="agent-status phase-1">Phase 1</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Kimberly AI builds the army that builds the brand. She manages 600,000+ affiliates, 500 core creators, and a library of 1M+. She tracks who's producing, who's converting, and who needs to be recruited next. The Comfort creator machine produces 5,000 videos per day &mdash; Kira makes sure they're all working.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Operations</div>
-                <ul>
-                  <li>Creator performance tracking (3-7 videos/day per creator)</li>
-                  <li>New creator recruitment and onboarding pipeline</li>
-                  <li>Yuka AI outreach integration (5,000 messages/day)</li>
-                  <li>Commission tracking and affiliate management</li>
-                  <li>Weekly call prep (5pm ET Thursdays)</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect TikTok, Instagram &mdash; creator tracking, Yuka AI integration, affiliate management.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F3AC;</span> TikTok Creator</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4F8;</span> Instagram API</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F916;</span> Yuka AI</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4B0;</span> Affiliate Dashboard</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Discord</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Gillian AI</span>
-                  <span class="agent-tag paired">Danielle AI</span>
-                  <span class="agent-tag paired">Lynn AI</span>
-                  <span class="agent-tag paired">Camillia AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">TikTok API</span>
-                  <span class="agent-tag tool">Instagram API</span>
-                  <span class="agent-tag tool">Yuka AI</span>
-                  <span class="agent-tag tool">Affiliate Platform API</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pixel -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#818CF8"><img src="https://i.pravatar.cc/150?img=38" alt="Danielle AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Danielle AI</div>
-            <div class="agent-role">Creative &amp; Content Ops</div>
-          </div>
-          <div class="agent-quote">"She turns data into the brief that wins."</div>
-          <span class="agent-status phase-2">Phase 2</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Danielle AI turns data into the brief that wins. She analyzes which ad creatives are performing, what customer language resonates, and which content formats drive conversions. Every Monday, she synthesizes inputs from Maya, Cleo, Kira, and Pulse into the Weekly Creative Brief &mdash; the document that drives all content creation.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Weekly Creative Flywheel</div>
-                <ul>
-                  <li>Top-performing ad creatives by ROAS and CTR from Gillian AI</li>
-                  <li>Customer language and review phrases from Courtney AI</li>
-                  <li>Best creator content for paid amplification from Kimberly AI</li>
-                  <li>Channel performance data and fatigue signals from Lynn AI</li>
-                  <li>Synthesizes into Weekly Creative Brief: hooks, angles, formats, AI tool recommendations</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect ad libraries &mdash; weekly creative brief auto-generated.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Ad Libraries</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F3A8;</span> Creative Analytics</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4DD;</span> Brief Generator</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Gillian AI</span>
-                  <span class="agent-tag paired">Kimberly AI</span>
-                  <span class="agent-tag paired">Lynn AI</span>
-                  <span class="agent-tag paired">Courtney AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Meta Ad Library</span>
-                  <span class="agent-tag tool">TikTok Creative Center</span>
-                  <span class="agent-tag tool">AI Creative Tools</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pulse -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#F87171"><img src="https://i.pravatar.cc/150?img=53" alt="Lynn AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Lynn AI</div>
-            <div class="agent-role">Performance Marketing</div>
-          </div>
-          <div class="agent-quote">"She optimizes every ad dollar until it screams."</div>
-          <span class="agent-status phase-2">Phase 2</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Lynn AI optimizes every ad dollar until it screams. She manages the performance marketing stack across Meta, TikTok, and Google &mdash; monitoring ROAS in real time, flagging creative fatigue, and identifying scaling opportunities. At $500K/day heading to $1M/day in Q4, precision is everything.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Operations</div>
-                <ul>
-                  <li>Real-time ROAS monitoring across Meta, TikTok, Google</li>
-                  <li>Creative fatigue detection and rotation alerts</li>
-                  <li>Budget allocation optimization across channels</li>
-                  <li>Whitelisting performance tracking (Jen Selter, Josh Goldie, etc.)</li>
-                  <li>Spark Ads performance monitoring on TikTok</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect Meta, TikTok, Google Ads &mdash; performance monitoring and ROAS alerts live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Meta Ads Manager</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F3B5;</span> TikTok Ads</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F50D;</span> Google Ads</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4C8;</span> Northbeam</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Gillian AI</span>
-                  <span class="agent-tag paired">Danielle AI</span>
-                  <span class="agent-tag paired">Kimberly AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Meta Marketing API</span>
-                  <span class="agent-tag tool">TikTok Ads API</span>
-                  <span class="agent-tag tool">Google Ads API</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cleo -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#38BDF8"><img src="https://i.pravatar.cc/150?img=9" alt="Courtney AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Courtney AI</div>
-            <div class="agent-role">Customer Intelligence</div>
-          </div>
-          <div class="agent-quote">"She listens so you don't have to."</div>
-          <span class="agent-status phase-1">Phase 1</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Courtney AI listens so you don't have to. She monitors every customer review, support ticket, and social mention to understand what customers love and what needs fixing. With a 50% repeat purchase rate, keeping customers happy is everything.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Daily Operations</div>
-                <ul>
-                  <li>Review monitoring across all platforms</li>
-                  <li>Support ticket categorization and trend analysis</li>
-                  <li>NPS tracking and sentiment analysis</li>
-                  <li>Customer language extraction for marketing use</li>
-                  <li>Overnight alert digest for urgent issues</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect reviews, Gorgias &mdash; review digest and NPS monitoring live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x2B50;</span> Review Platforms</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F3A7;</span> Gorgias</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> NPS Dashboard</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Social Listening</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Danielle AI</span>
-                  <span class="agent-tag paired">Kimberly AI</span>
-                  <span class="agent-tag paired">Mae AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Gorgias API</span>
-                  <span class="agent-tag tool">Review Platform APIs</span>
-                  <span class="agent-tag tool">Sentiment Analysis</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Forge -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#FBBF24"><img src="https://i.pravatar.cc/150?img=59" alt="Mae AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Mae AI</div>
-            <div class="agent-role">Product Development</div>
-          </div>
-          <div class="agent-quote">"She builds what the customer demands."</div>
-          <span class="agent-status phase-3">Phase 3</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Mae AI builds what the customer demands. She tracks product performance data, monitors competitor launches, and works with VP of Product May to plan the next collection. From the original hoodie that started it all to blankets and loungewear &mdash; Forge knows what's coming next.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Focus Areas</div>
-                <ul>
-                  <li>Product performance analytics (sell-through, return rates, reviews)</li>
-                  <li>Competitor product monitoring and gap analysis</li>
-                  <li>New product development pipeline tracking</li>
-                  <li>Manufacturing coordination with China, Cambodia, Vietnam suppliers</li>
-                  <li>Seasonal collection planning and trend forecasting</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect product roadmap &mdash; weekly NPD digest live.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F3ED;</span> Product Pipeline</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Sales Analytics</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F52C;</span> Trend Research</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Jian AI</span>
-                  <span class="agent-tag paired">Courtney AI</span>
-                  <span class="agent-tag paired">Gillian AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Shopify Product API</span>
-                  <span class="agent-tag tool">Trend Analysis Tools</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Nexus -->
-      <div class="agent-card" onclick="toggleAgent(this)">
-        <div class="agent-row">
-          <div class="agent-avatar" style="background:#A3E635"><img src="https://i.pravatar.cc/150?img=51" alt="Camillia AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
-          <div class="agent-info">
-            <div class="agent-name">Camillia AI</div>
-            <div class="agent-role">Community &amp; Affiliates</div>
-          </div>
-          <div class="agent-quote">"She turns customers into evangelists."</div>
-          <span class="agent-status phase-2">Phase 2</span>
-          <div class="agent-chevron"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,10 12,6"/></svg></div>
-        </div>
-        <div class="agent-expand">
-          <div class="agent-detail">
-            <div class="agent-detail-left">
-              <p class="agent-about">Camillia AI turns customers into evangelists. She manages the Discord community (education hub, weekly breakdowns, tier-based channels), tracks affiliate engagement, and ensures the community flywheel keeps spinning. It takes 13 touchpoints for a Comfort customer to buy &mdash; Nexus makes sure every touchpoint counts.</p>
-              <div class="agent-section">
-                <div class="agent-section-title">Key Focus Areas</div>
-                <ul>
-                  <li>Discord community management and engagement metrics</li>
-                  <li>Affiliate program health (600K+ affiliates)</li>
-                  <li>Customer-to-affiliate conversion tracking</li>
-                  <li>Community content curation (top videos, bestsellers, color trends)</li>
-                  <li>Weekly onboarding call coordination</li>
-                </ul>
-              </div>
-              <div class="agent-section">
-                <div class="agent-section-title">Setup Note</div>
-                <ul>
-                  <li>Connect Discord &mdash; affiliate engagement and community health monitoring.</li>
-                </ul>
-              </div>
-            </div>
-            <div class="agent-detail-right">
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Base Access</div>
-                <div class="agent-access-list">
-                  <div class="agent-access-item"><span class="emoji">&#x1F4AC;</span> Discord</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F91D;</span> Affiliate Platform</div>
-                  <div class="agent-access-item"><span class="emoji">&#x1F4CA;</span> Community Analytics</div>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Paired With</div>
-                <div class="agent-tags">
-                  <span class="agent-tag paired">Hudson AI</span>
-                  <span class="agent-tag paired">Kimberly AI</span>
-                  <span class="agent-tag paired">Courtney AI</span>
-                  <span class="agent-tag paired">Gillian AI</span>
-                </div>
-              </div>
-              <div class="agent-meta-block">
-                <div class="agent-meta-title">Tools &amp; Integrations</div>
-                <div class="agent-tags">
-                  <span class="agent-tag tool">Discord API</span>
-                  <span class="agent-tag tool">Affiliate Platform API</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="workflows">
-  <div class="container">
-    <div class="section-label">How It Works</div>
-    <h2 class="section-title fade-up">Three workflows that run <em>without you.</em></h2>
-    <p class="section-desc fade-up">Automated intelligence loops that keep you informed and the business moving &mdash; every day, every week.</p>
-    <div class="workflows-grid">
-
-      <div class="workflow-card fade-up">
-        <div class="wf-type">Daily</div>
-        <div class="wf-title">The Morning Brief</div>
-        <div class="wf-time">8:00 AM ET &middot; Every Day</div>
-        <div class="wf-steps">
-          <div class="wf-step"><div class="wf-step-num" style="background:#F472B6">1</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Gillian AI</div><div class="wf-step-desc">Pulls Shopify revenue, Meta ROAS, TikTok ROAS from last 24 hours</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#4A9EFF">2</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Cherrie AI</div><div class="wf-step-desc">Pulls overnight P&amp;L signals, margin alerts, cash position</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#FB923C">3</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Kimberly AI</div><div class="wf-step-desc">Pulls top-performing creator content and new creator applications</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#38BDF8">4</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Courtney AI</div><div class="wf-step-desc">Pulls overnight review alerts and top support issues</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#FF6B6B">5</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Jian AI</div><div class="wf-step-desc">Pulls inventory alerts, stockout warnings, shipment updates</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#D4A853">6</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Hudson AI</div><div class="wf-step-desc">Compiles everything into one Telegram message to Hudson. 8am, every day.</div></div></div>
-        </div>
-      </div>
-
-      <div class="workflow-card fade-up fade-up-delay-1">
-        <div class="wf-type">Weekly</div>
-        <div class="wf-title">The Creative Flywheel</div>
-        <div class="wf-time">Every Monday</div>
-        <div class="wf-steps">
-          <div class="wf-step"><div class="wf-step-num" style="background:#F472B6">1</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Gillian AI</div><div class="wf-step-desc">Sends Pixel last week's top-performing ad creatives by ROAS and CTR</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#38BDF8">2</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Courtney AI</div><div class="wf-step-desc">Sends Pixel top review phrases and recurring customer language</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#FB923C">3</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Kimberly AI</div><div class="wf-step-desc">Sends Pixel which creator content performed best in paid amplification</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#F87171">4</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Lynn AI</div><div class="wf-step-desc">Sends Pixel channel-level performance data and creative fatigue signals</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#818CF8">5</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Danielle AI</div><div class="wf-step-desc">Synthesizes all inputs into the Weekly Creative Brief &mdash; hooks, angles, formats, AI tool recs</div></div></div>
-        </div>
-      </div>
-
-      <div class="workflow-card fade-up fade-up-delay-2">
-        <div class="wf-type">Weekly</div>
-        <div class="wf-title">The Numbers Review</div>
-        <div class="wf-time">Every Friday</div>
-        <div class="wf-steps">
-          <div class="wf-step"><div class="wf-step-num" style="background:#F472B6">1</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Gillian AI</div><div class="wf-step-desc">Compiles week's revenue, ROAS, and subscription metrics</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#4A9EFF">2</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Cherrie AI</div><div class="wf-step-desc">Prepares weekly P&amp;L summary &mdash; revenue vs target, margin vs budget, cash position</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#4ECDC4">3</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Alex AI</div><div class="wf-step-desc">International market entry progress &mdash; UK, AU, CA pipeline status</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#FF8C42">4</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Vault</div><div class="wf-step-desc">Retail buildout progress &mdash; Mall of America, American Dream Mall status</div></div></div>
-          <div class="wf-step"><div class="wf-step-num" style="background:#D4A853">5</div><div class="wf-step-line"></div><div class="wf-step-content"><div class="wf-step-agent">Hudson AI</div><div class="wf-step-desc">Sends Hudson a Friday digest &mdash; financials, growth, expansion. One message.</div></div></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ROADMAP -->
-<section id="roadmap">
-  <div class="container">
-    <div class="section-label">Roadmap</div>
-    <h2 class="section-title fade-up">15 agents. <em>14 days.</em></h2>
-    <p class="section-desc fade-up">All 15 agents deployed and fully operational within two weeks.</p>
-    <div class="roadmap-grid">
-
-      <div class="sprint-card fade-up">
-        <div class="sprint-number">01</div>
-        <div class="sprint-label">Sprint 01</div>
-        <div class="sprint-title">Days 1&ndash;3 &mdash; Command Centre Online</div>
-        <div class="sprint-agents">
-          <span class="sprint-agent-tag" style="border-color:#D4A853;color:#D4A853">Hudson AI</span>
-          <span class="sprint-agent-tag" style="border-color:#4A9EFF;color:#4A9EFF">Cherrie AI</span>
-          <span class="sprint-agent-tag" style="border-color:#F472B6;color:#F472B6">Gillian AI</span>
-        </div>
-        <div class="sprint-tasks">
-          <div class="sprint-task">Apollo: Configure as master orchestrator &mdash; connect Telegram, Notion, email</div>
-          <div class="sprint-task">Apollo: Morning brief live &mdash; Shopify revenue + Meta spend + top 3 issues</div>
-          <div class="sprint-task">Fin: Connect Shopify, banking &mdash; daily P&amp;L and cash position brief live</div>
-          <div class="sprint-task">Maya: Connect Shopify, Meta Ads, Northbeam &mdash; daily revenue brief live</div>
-        </div>
-      </div>
-
-      <div class="sprint-card fade-up fade-up-delay-1">
-        <div class="sprint-number">02</div>
-        <div class="sprint-label">Sprint 02</div>
-        <div class="sprint-title">Days 4&ndash;7 &mdash; Operations Stack Live</div>
-        <div class="sprint-agents">
-          <span class="sprint-agent-tag" style="border-color:#FF6B6B;color:#FF6B6B">Jian AI</span>
-          <span class="sprint-agent-tag" style="border-color:#FB923C;color:#FB923C">Kimberly AI</span>
-          <span class="sprint-agent-tag" style="border-color:#38BDF8;color:#38BDF8">Courtney AI</span>
-        </div>
-        <div class="sprint-tasks">
-          <div class="sprint-task">Chain: Connect Shopify inventory, 3PL API &mdash; stockout alerts live</div>
-          <div class="sprint-task">Kira: Connect TikTok, Instagram &mdash; creator tracking, Yuka AI integration</div>
-          <div class="sprint-task">Cleo: Connect reviews, Gorgias &mdash; review digest and NPS monitoring live</div>
-        </div>
-      </div>
-
-      <div class="sprint-card fade-up fade-up-delay-2">
-        <div class="sprint-number">03</div>
-        <div class="sprint-label">Sprint 03</div>
-        <div class="sprint-title">Days 8&ndash;11 &mdash; Growth Engine</div>
-        <div class="sprint-agents">
-          <span class="sprint-agent-tag" style="border-color:#F87171;color:#F87171">Lynn AI</span>
-          <span class="sprint-agent-tag" style="border-color:#818CF8;color:#818CF8">Danielle AI</span>
-          <span class="sprint-agent-tag" style="border-color:#4ECDC4;color:#4ECDC4">Alex AI</span>
-          <span class="sprint-agent-tag" style="border-color:#FF8C42;color:#FF8C42">Vault</span>
-          <span class="sprint-agent-tag" style="border-color:#A3E635;color:#A3E635">Camillia AI</span>
-        </div>
-        <div class="sprint-tasks">
-          <div class="sprint-task">Pulse: Connect Meta, TikTok, Google Ads &mdash; performance monitoring and ROAS alerts</div>
-          <div class="sprint-task">Pixel: Connect ad libraries &mdash; weekly creative brief auto-generated</div>
-          <div class="sprint-task">Globe: International expansion tracker &mdash; UK, AU, CA market entry playbooks</div>
-          <div class="sprint-task">Vault: Retail buildout tracker &mdash; Mall of America + American Dream progress</div>
-          <div class="sprint-task">Nexus: Connect Discord &mdash; affiliate engagement and community health</div>
-        </div>
-      </div>
-
-      <div class="sprint-card fade-up fade-up-delay-3">
-        <div class="sprint-number">04</div>
-        <div class="sprint-label">Sprint 04</div>
-        <div class="sprint-title">Days 12&ndash;14 &mdash; Full Operation</div>
-        <div class="sprint-agents">
-          <span class="sprint-agent-tag" style="border-color:#FBBF24;color:#FBBF24">Mae AI</span>
-          <span class="sprint-agent-tag" style="border-color:#A78BFA;color:#A78BFA">Scout</span>
-          <span class="sprint-agent-tag" style="border-color:#34D399;color:#34D399">Sage</span>
-        </div>
-        <div class="sprint-tasks">
-          <div class="sprint-task">Forge: Connect product roadmap &mdash; weekly NPD digest live</div>
-          <div class="sprint-task">Scout: Competitive intelligence, market trends live</div>
-          <div class="sprint-task">Sage: OKR framework, weekly strategy digest</div>
-          <div class="sprint-task">All 15 agents fully wired &mdash; Apollo compiles the complete CEO brief daily</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="container">
-    <div class="footer-logo">
-      <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="6" fill="#D4A853"/><g stroke="#D4A853" stroke-width="2" stroke-linecap="round"><line x1="14" y1="1" x2="14" y2="5"/><line x1="14" y1="23" x2="14" y2="27"/><line x1="1" y1="14" x2="5" y2="14"/><line x1="23" y1="14" x2="27" y2="14"/><line x1="4.8" y1="4.8" x2="7.6" y2="7.6"/><line x1="20.4" y1="20.4" x2="23.2" y2="23.2"/><line x1="4.8" y1="23.2" x2="7.6" y2="20.4"/><line x1="20.4" y1="7.6" x2="23.2" y2="4.8"/></g></svg>
-      Apollo
-    </div>
-    <div class="footer-sub">Comfort &middot; AI Workforce Blueprint &middot; 2026</div>
-    <div class="footer-sub" style="margin-top:8px"><a href="https://comfrt.com" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none">comfrt.com</a></div>
-  </div>
-</footer>
-
 <script>
-// Toggle agent card expand/collapse
-function toggleAgent(card) {
-  var wasExpanded = card.classList.contains('expanded');
-  // Close all other cards
-  document.querySelectorAll('.agent-card.expanded').forEach(function(c) {
-    if (c !== card) c.classList.remove('expanded');
-  });
-  // Toggle this card
-  if (wasExpanded) {
-    card.classList.remove('expanded');
-  } else {
-    card.classList.add('expanded');
-    // Scroll into view with offset
-    setTimeout(function() {
-      var rect = card.getBoundingClientRect();
-      var offset = 140;
-      if (rect.top < offset) {
-        window.scrollBy({ top: rect.top - offset, behavior: 'smooth' });
-      }
-    }, 100);
+// ========== AGENT DATA ==========
+const agents = [
+  {
+    name:'Apollo', role:'Master Orchestrator', status:'live', avatar:'avatars/apollo.jpg',
+    mirror:'Hudson AI', group:'orchestrator',
+    description:'Central AI coordinator managing all agent workflows, memory, and inter-agent communication.',
+    integration:'Connected — Telegram, GitHub, Memory Store',
+    capabilities:['Orchestrate multi-agent workflows','Monitor agent health and heartbeats','Manage shared memory and context','Route tasks to specialized agents','Report to Hudson via Telegram']
+  },
+  {
+    name:'Cherrie AI', role:'Finance & P&L', status:'planned', avatar:'avatars/cherrie.jpg',
+    mirror:'Cherrie (CFO)', group:'operations',
+    description:'Financial analysis, P&L tracking, budget forecasting, and margin optimization.',
+    integration:'Not Connected',
+    capabilities:['Automated P&L reporting','Margin analysis by SKU','Budget forecasting','Cash flow monitoring','Financial anomaly detection']
+  },
+  {
+    name:'Jian AI', role:'Supply Chain', status:'planned', avatar:'avatars/jian.jpg',
+    mirror:'Jian', group:'operations',
+    description:'Supply chain optimization, inventory management, and vendor coordination.',
+    integration:'Not Connected',
+    capabilities:['Inventory level monitoring','Vendor lead time tracking','Reorder point optimization','Supply chain risk alerts','Logistics coordination']
+  },
+  {
+    name:'Alex AI', role:'International', status:'planned', avatar:'avatars/alex.jpg',
+    mirror:'Alex', group:'operations',
+    description:'International market operations, compliance, and cross-border logistics.',
+    integration:'Not Connected',
+    capabilities:['International market analysis','Compliance monitoring','Currency impact tracking','Cross-border logistics','Localization strategy']
+  },
+  {
+    name:'Edwin AI', role:'Technology', status:'planned', avatar:'avatars/edwin.jpg',
+    mirror:'Edwin', group:'operations',
+    description:'Technology infrastructure, platform operations, and system integrations.',
+    integration:'Not Connected',
+    capabilities:['Platform health monitoring','Integration management','Tech stack optimization','Security oversight','Performance analytics']
+  },
+  {
+    name:'Vault', role:'Retail Operations', status:'planned', avatar:'avatars/vault.jpg',
+    mirror:'TBD', group:'operations',
+    description:'Retail channel management, store operations, and omnichannel strategy.',
+    integration:'Not Connected',
+    capabilities:['Retail performance tracking','Store operations optimization','Omnichannel coordination','POS data analysis','Inventory allocation']
+  },
+  {
+    name:'Scout', role:'Market Intelligence', status:'planned', avatar:'avatars/scout.jpg',
+    mirror:'TBD', group:'operations',
+    description:'Competitive intelligence, market trends, and strategic insights.',
+    integration:'Not Connected',
+    capabilities:['Competitor monitoring','Market trend analysis','Price intelligence','Consumer sentiment tracking','Industry report generation']
+  },
+  {
+    name:'Sage', role:'Strategy & OKRs', status:'planned', avatar:'avatars/sage.jpg',
+    mirror:'TBD', group:'operations',
+    description:'Strategic planning, OKR management, and organizational alignment.',
+    integration:'Not Connected',
+    capabilities:['OKR tracking and scoring','Strategic initiative monitoring','Cross-team alignment','Quarterly planning support','Progress reporting']
+  },
+  {
+    name:'Gillian AI', role:'Revenue & Growth', status:'planned', avatar:'avatars/gillian.jpg',
+    mirror:'Gillian', group:'growth',
+    description:'Revenue optimization, growth strategy, and sales channel performance.',
+    integration:'Not Connected',
+    capabilities:['Revenue forecasting','Growth opportunity identification','Sales channel analysis','Pricing optimization','Customer LTV modeling']
+  },
+  {
+    name:'Kimberly AI', role:'Influencer Ops', status:'planned', avatar:'avatars/kira.jpg',
+    mirror:'Kimberly', group:'growth',
+    description:'Influencer relationship management, campaign coordination, and ROI tracking.',
+    integration:'Not Connected',
+    capabilities:['Influencer discovery and vetting','Campaign performance tracking','ROI analysis per creator','Content calendar management','Relationship CRM']
+  },
+  {
+    name:'Danielle AI', role:'Creative Direction', status:'planned', avatar:'avatars/pixel.jpg',
+    mirror:'Danielle', group:'growth',
+    description:'Brand creative direction, visual assets, and design system management.',
+    integration:'Not Connected',
+    capabilities:['Brand consistency monitoring','Creative asset generation','Design system management','Visual trend analysis','Campaign creative briefs']
+  },
+  {
+    name:'Lynn AI', role:'Performance Marketing', status:'planned', avatar:'avatars/pulse.jpg',
+    mirror:'Lynn', group:'growth',
+    description:'Paid media optimization, ad performance, and marketing analytics.',
+    integration:'Not Connected',
+    capabilities:['Ad spend optimization','ROAS tracking','A/B test analysis','Attribution modeling','Campaign performance reports']
+  },
+  {
+    name:'Courtney AI', role:'Customer Experience', status:'planned', avatar:'avatars/cleo.jpg',
+    mirror:'Courtney', group:'growth',
+    description:'Customer experience management, support optimization, and satisfaction tracking.',
+    integration:'Not Connected',
+    capabilities:['Customer satisfaction monitoring','Support ticket analysis','Experience journey mapping','Feedback aggregation','NPS tracking']
+  },
+  {
+    name:'Mae AI', role:'Product Development', status:'planned', avatar:'avatars/maya.jpg',
+    mirror:'Mae (VP Product)', group:'growth',
+    description:'Product development lifecycle, feature prioritization, and launch coordination.',
+    integration:'Not Connected',
+    capabilities:['Product roadmap management','Feature prioritization','Launch readiness tracking','User feedback synthesis','Competitive feature analysis']
+  },
+  {
+    name:'Camillia AI', role:'Community', status:'planned', avatar:'avatars/nexus.jpg',
+    mirror:'Camillia', group:'growth',
+    description:'Community engagement, brand advocacy, and social presence management.',
+    integration:'Not Connected',
+    capabilities:['Community health metrics','Engagement optimization','Brand advocacy programs','Social listening','Event coordination']
   }
-}
+];
 
-// Mobile menu toggle
-document.getElementById('menuBtn').addEventListener('click', function() {
-  document.getElementById('navTabs').classList.toggle('open');
-});
+// ========== RENDER AGENTS ==========
+function renderAgents(){
+  const grids = {
+    orchestrator: document.getElementById('orchestratorGrid'),
+    operations: document.getElementById('operationsGrid'),
+    growth: document.getElementById('growthGrid')
+  };
+  agents.forEach((agent, i) => {
+    const card = document.createElement('div');
+    const isOrch = agent.group === 'orchestrator';
+    card.className = 'agent-card' + (isOrch ? ' orchestrator' : '');
+    card.setAttribute('data-index', i);
+    card.onclick = () => openModal(i);
 
-// Close mobile menu on link click
-document.querySelectorAll('.nav-tab').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    document.getElementById('navTabs').classList.remove('open');
-  });
-});
-
-// Active nav tab on scroll
-var sections = document.querySelectorAll('section[id]');
-var navTabs = document.querySelectorAll('.nav-tab[data-section]');
-function updateActiveTab() {
-  var scrollY = window.scrollY + 200;
-  sections.forEach(function(section) {
-    var top = section.offsetTop;
-    var height = section.offsetHeight;
-    var id = section.getAttribute('id');
-    if (scrollY >= top && scrollY < top + height) {
-      navTabs.forEach(function(tab) {
-        tab.classList.toggle('active', tab.getAttribute('data-section') === id);
-      });
+    if(isOrch){
+      card.innerHTML = `
+        <div class="agent-top">
+          <img class="agent-avatar" src="${agent.avatar}" alt="${agent.name}" loading="lazy">
+          <div class="agent-info">
+            <div class="agent-name">${agent.name}</div>
+            <div class="agent-role">${agent.role}</div>
+          </div>
+        </div>
+        <div class="orch-meta">
+          <div class="agent-status ${agent.status}">
+            <span class="status-indicator ${agent.status}"></span>
+            ${agent.status.toUpperCase()}
+          </div>
+          <div class="agent-active">Active now</div>
+        </div>`;
+    } else {
+      const activeText = agent.status === 'live' ? '<div class="agent-active">Active now</div>' : '';
+      card.innerHTML = `
+        <div class="agent-top">
+          <img class="agent-avatar" src="${agent.avatar}" alt="${agent.name}" loading="lazy">
+          <div class="agent-info">
+            <div class="agent-name">${agent.name}</div>
+            <div class="agent-role">${agent.role}</div>
+          </div>
+        </div>
+        <div class="agent-bottom">
+          <div class="agent-status ${agent.status}">
+            <span class="status-indicator ${agent.status}"></span>
+            ${agent.status.toUpperCase()}
+          </div>
+          ${activeText}
+        </div>`;
     }
+    grids[agent.group].appendChild(card);
   });
 }
-window.addEventListener('scroll', updateActiveTab, { passive: true });
 
-// Team sub-nav visibility
-var teamSection = document.getElementById('team');
-var teamSubnav = document.getElementById('teamSubnav');
-function updateSubnav() {
-  if (!teamSection || !teamSubnav) return;
-  var rect = teamSection.getBoundingClientRect();
-  var visible = rect.top <= 72 && rect.bottom > 200;
-  teamSubnav.classList.toggle('visible', visible);
+// ========== MODAL ==========
+function openModal(index){
+  const a = agents[index];
+  document.getElementById('modalAvatar').src = a.avatar;
+  document.getElementById('modalName').textContent = a.name;
+  document.getElementById('modalRole').textContent = a.role;
+  document.getElementById('modalStatus').innerHTML =
+    `<span class="modal-badge ${a.status}"><span class="status-indicator ${a.status}"></span>${a.status.toUpperCase()}</span>`;
+  document.getElementById('modalIntegration').textContent = a.integration;
+  document.getElementById('modalMirror').innerHTML = `Mirrors: <span>${a.mirror}</span>`;
+  const caps = document.getElementById('modalCaps');
+  caps.innerHTML = '';
+  a.capabilities.forEach(c => {
+    const li = document.createElement('li');
+    li.textContent = c;
+    caps.appendChild(li);
+  });
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-window.addEventListener('scroll', updateSubnav, { passive: true });
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modalClose').onclick = closeModal;
+document.getElementById('modalOverlay').onclick = e => {
+  if(e.target === document.getElementById('modalOverlay')) closeModal();
+};
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
-// Team filter
-document.querySelectorAll('.team-filter').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.team-filter').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    var filter = btn.getAttribute('data-filter');
-    document.querySelectorAll('.team-group').forEach(function(group) {
-      if (filter === 'all') {
-        group.style.display = '';
-      } else {
-        group.style.display = group.getAttribute('data-group') === filter ? '' : 'none';
+// ========== LIVE CLOCK ==========
+function updateClock(){
+  const now = new Date();
+  const opts = {
+    timeZone:'America/New_York',
+    month:'short', day:'numeric', year:'numeric',
+    hour:'numeric', minute:'2-digit', second:'2-digit',
+    hour12:true
+  };
+  const parts = new Intl.DateTimeFormat('en-US', opts).formatToParts(now);
+  const get = type => (parts.find(p=>p.type===type)||{}).value||'';
+  const str = `${get('month')} ${get('day')}, ${get('year')} · ${get('hour')}:${get('minute')}:${get('second')} ${get('dayPeriod').toUpperCase()} EST`;
+  document.getElementById('liveClock').textContent = str;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ========== LAST SYNC ==========
+function updateLastSync(){
+  const now = new Date();
+  const h = now.getHours() % 12 || 12;
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const ap = now.getHours() >= 12 ? 'PM' : 'AM';
+  document.getElementById('lastSyncValue').textContent = `${h}:${m} ${ap}`;
+  document.getElementById('lastSyncSub').textContent = 'Just now';
+}
+setInterval(updateLastSync, 60000);
+updateLastSync();
+
+// ========== ACTIVITY FEED ==========
+const feedData = [
+  {agent:'Apollo', avatar:'avatars/apollo.jpg', action:'Monitoring Telegram', time:0},
+  {agent:'Apollo', avatar:'avatars/apollo.jpg', action:'Checked heartbeat — all clear', time:2},
+  {agent:'Apollo', avatar:'avatars/apollo.jpg', action:'Updated memory files', time:15},
+  {agent:'Apollo', avatar:'avatars/apollo.jpg', action:'Responded to Hudson via Telegram', time:60},
+  {agent:'System', avatar:null, action:'All agents nominal', time:180},
+];
+function renderFeed(){
+  const container = document.getElementById('activityFeed');
+  container.innerHTML = '';
+  feedData.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'feed-item';
+    const timeLabel = item.time === 0 ? 'NOW' :
+      item.time < 60 ? `${item.time}m ago` :
+      `${Math.floor(item.time/60)}h ago`;
+    const avatarEl = item.avatar
+      ? `<img class="feed-avatar" src="${item.avatar}" alt="${item.agent}" loading="lazy">`
+      : `<div class="feed-avatar system">SYS</div>`;
+    el.innerHTML = `
+      ${avatarEl}
+      <div class="feed-body">
+        <div class="feed-agent">${item.agent}</div>
+        <div class="feed-action">${item.action}</div>
+        <div class="feed-time">${timeLabel}</div>
+      </div>`;
+    container.appendChild(el);
+  });
+}
+renderFeed();
+setInterval(renderFeed, 30000);
+
+// ========== FADE-UP ON SCROLL ==========
+function initFadeUp(){
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
       }
     });
-  });
+  }, {threshold:0.1});
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded', () => {
+  renderAgents();
+  initFadeUp();
 });
-
-// Scroll fade-in animations
-(function() {
-  var els = document.querySelectorAll('.fade-up');
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  els.forEach(function(el) { observer.observe(el); });
-})();
 </script>
 </body>
 </html>
